@@ -18,22 +18,22 @@
             overflow: hidden;
         }
 
-        /* --- BAGIAN WALLPAPER --- */
         .lockscreen-container {
             width: 100%;
             height: 100%;
-            background-image: url('https://pin.it/6Fpm3K52i');
+            /* Wallpaper sudah terpasang rapi di sini */
+            background-image: url('https://i.ibb.co.com/KjnQVSrS/wallpaper.jpg');
             background-size: cover;
             background-position: center;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
+            justify-content: center;
             align-items: center;
-            padding-bottom: 80px;
+            padding-bottom: 50px;
             position: relative;
         }
 
-        /* Efek gelap tipis agar teks tetap terbaca */
+        /* Efek gelap tipis di atas wallpaper biar teksnya kebaca jelas */
         .overlay {
             position: absolute;
             top: 0;
@@ -44,7 +44,6 @@
             z-index: 1;
         }
 
-        /* --- KONTROL LOCKSCREEN --- */
         .lock-content {
             position: relative;
             z-index: 2;
@@ -57,16 +56,16 @@
 
         .clock {
             color: #fff;
-            font-size: 3.5rem;
-            font-weight: 300;
-            margin-bottom: 2px;
+            font-size: 4rem;
+            font-weight: 200;
+            margin-bottom: 5px;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
         .date {
             color: #eee;
-            font-size: 0.95rem;
-            margin-bottom: 30px;
+            font-size: 1rem;
+            margin-bottom: 40px;
             text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
         }
 
@@ -79,12 +78,12 @@
 
         input[type="password"] {
             width: 100%;
-            padding: 12px 15px;
+            padding: 14px 15px;
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 12px;
+            border-radius: 14px;
             color: #fff;
             font-size: 1rem;
             text-align: center;
@@ -104,12 +103,12 @@
 
         button {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 12px;
+            border-radius: 14px;
             color: #fff;
             font-size: 1rem;
             font-weight: 600;
@@ -124,7 +123,7 @@
         .hint-text {
             color: rgba(255, 255, 255, 0.8);
             font-size: 0.8rem;
-            margin-top: 10px;
+            margin-top: 12px;
             text-align: center;
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
         }
@@ -132,13 +131,12 @@
         .error-msg {
             color: #ffcccc;
             font-size: 0.85rem;
-            margin-top: 8px;
+            margin-top: 10px;
             min-height: 20px;
             text-align: center;
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
         }
 
-        /* --- HALAMAN SETELAH TERBUKA --- */
         #unlocked-page {
             display: none;
             width: 100%;
@@ -154,57 +152,48 @@
 </head>
 <body>
 
-    <!-- BAGIAN 1: LOCKSCREEN -->
     <div class="lockscreen-container" id="lockscreen">
         <div class="overlay"></div>
-
+        
         <div class="lock-content">
-            <!-- Jam Statis 14.12 -->
             <div class="clock" id="clock">14:12</div>
             <div class="date">Rabu, 28 Oktober</div>
 
-            <!-- Form Password -->
             <div class="input-group">
                 <input type="password" id="passcode" placeholder="PIN" oninput="playKeySound()" />
                 <button onclick="checkPassword()">Buka</button>
             </div>
-
-            <!-- Hint Sandi -->
+            
             <div class="hint-text">Hint: profile author</div>
             <div class="error-msg" id="errorMsg"></div>
         </div>
     </div>
 
-    <!-- BAGIAN 2: HALAMAN UTAMA KETIKA TERBUKA -->
     <div id="unlocked-page" style="display: none;">
         <p>Berhasil Masuk</p>
     </div>
 
     <script>
-        // Efek Suara Ketikan
         function playKeySound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
-
+                
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(400 + Math.random() * 100, audioCtx.currentTime);
-
+                
                 gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.04);
-
+                
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
-
+                
                 osc.start();
                 osc.stop(audioCtx.currentTime + 0.04);
-            } catch(e) {
-                // Abaikan jika diblokir browser sebelum interaksi
-            }
+            } catch(e) {}
         }
 
-        // Logika Password (PIN: 1007)
         const passwordBenar = "1007"; 
 
         function checkPassword() {
