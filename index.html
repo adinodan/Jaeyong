@@ -4,583 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>iPhone 15 Simulator</title>
-    <style>
-        :root {
-            --sf-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            -webkit-user-select: none;
-            font-family: var(--sf-font);
-        }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            height: 100dvh;
-            overflow: hidden;
-            background-color: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            touch-action: none;
-        }
-
-        /* Container Simulator iPhone 15 */
-        .iphone-frame {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            height: 100dvh;
-            max-width: 430px;
-            background-color: #000;
-            overflow: hidden;
-            touch-action: none;
-        }
-
-        @media (min-width: 500px) {
-            .iphone-frame {
-                height: 92vh;
-                max-height: 932px;
-                border-radius: 50px;
-                border: 10px solid #2d2d2d;
-                box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
-            }
-        }
-
-        /* Status Bar */
-        .status-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 48px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 28px;
-            color: #ffffff;
-            font-size: 14px;
-            font-weight: 600;
-            z-index: 100;
-            pointer-events: none;
-        }
-
-        .status-left { margin-top: 6px; }
-        .status-right {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 6px;
-        }
-        .status-right svg { fill: #ffffff; }
-
-        /* Dynamic Island */
-        .dynamic-island {
-            position: absolute;
-            top: 11px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 120px;
-            height: 35px;
-            background-color: #000000;
-            border-radius: 20px;
-            z-index: 101;
-            pointer-events: none;
-        }
-
-        /* Screen Base Layer */
-        .screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* ---------------- LOCKSCREEN ---------------- */
-        #lockscreen {
-            z-index: 10;
-            background-image: url('https://i.ibb.co.com/G35y8YHN/6bb64ebbf4b46463a682d83afd6cd03f.jpg');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            padding: 75px 20px 25px 20px;
-            color: #ffffff;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.4);
-            cursor: pointer;
-            will-change: transform, opacity;
-        }
-
-        .lock-header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            pointer-events: none;
-        }
-
-        .lock-date {
-            font-size: 17px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            margin-bottom: 2px;
-            opacity: 0.9;
-        }
-
-        .lock-time {
-            font-size: 84px;
-            font-weight: 700;
-            line-height: 1;
-            letter-spacing: -2px;
-        }
-
-        .lock-bottom-area {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .lock-actions {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 15px;
-        }
-
-        .action-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.45);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            cursor: pointer;
-            z-index: 12;
-            touch-action: auto;
-        }
-
-        .action-btn.active {
-            background: #ffffff;
-            color: #000000;
-        }
-
-        .swipe-hint {
-            font-size: 13px;
-            font-weight: 500;
-            opacity: 0.85;
-            animation: bounce 2s infinite;
-            pointer-events: none;
-        }
-
-        /* ---------------- PASSCODE SCREEN ---------------- */
-        #passcode-screen {
-            z-index: 20;
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(35px);
-            -webkit-backdrop-filter: blur(35px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transform: translateY(100%);
-            opacity: 0;
-            pointer-events: none;
-            transition: transform 0.35s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.35s ease;
-            will-change: transform, opacity;
-        }
-
-        #passcode-screen.active {
-            transform: translateY(0) !important;
-            opacity: 1 !important;
-            pointer-events: auto;
-        }
-
-        #passcode-screen.dragging {
-            transition: none !important;
-        }
-
-        .passcode-title {
-            color: white;
-            font-size: 20px;
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-
-        .error-message {
-            color: #ff453a;
-            font-size: 13px;
-            font-weight: 500;
-            min-height: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-            padding: 0 20px;
-        }
-
-        .dots-container {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 45px;
-        }
-
-        .dot {
-            width: 13px;
-            height: 13px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.8);
-            transition: background-color 0.2s;
-        }
-
-        .dot.filled { background-color: #ffffff; }
-
-        .keypad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px 28px;
-            justify-items: center;
-        }
-
-        .key-btn {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.18);
-            backdrop-filter: blur(10px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .key-btn:active { background: rgba(255, 255, 255, 0.4); }
-
-        .key-num {
-            font-size: 30px;
-            font-weight: 400;
-            line-height: 1;
-        }
-
-        .key-sub {
-            font-size: 9px;
-            font-weight: 600;
-            letter-spacing: 2px;
-            margin-top: 2px;
-        }
-
-        /* ---------------- HOMESCREEN ---------------- */
-        #homescreen {
-            z-index: 5;
-            background-image: url('https://i.ibb.co.com/M5WzWbhk/040571acff86430653fb4256f45bd105.jpg');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 60px 0 20px 0;
-            opacity: 0;
-            transform: scale(1.1);
-            pointer-events: none;
-            transition: transform 0.5s ease, opacity 0.5s ease;
-        }
-
-        #homescreen.unlocked {
-            opacity: 1;
-            transform: scale(1);
-            pointer-events: auto;
-        }
-
-        /* Slider Homescreen 2 Halaman */
-        .homescreen-slider {
-            width: 100%;
-            flex: 1;
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scrollbar-width: none;
-            touch-action: pan-x;
-        }
-
-        .homescreen-slider::-webkit-scrollbar { display: none; }
-
-        .slide-page {
-            min-width: 100%;
-            scroll-snap-align: start;
-            padding: 15px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* Page Indicator */
-        .page-dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .page-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.4);
-            transition: background 0.3s;
-        }
-
-        .page-dot.active { background: #ffffff; }
-
-        /* App Grid */
-        .app-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px 14px;
-            justify-items: center;
-        }
-
-        .app-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .app-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 14px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            color: white;
-            overflow: hidden;
-        }
-
-        .app-icon svg {
-            width: 38px;
-            height: 38px;
-        }
-
-        .app-name {
-            color: white;
-            font-size: 11px;
-            font-weight: 500;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
-            text-align: center;
-            max-width: 68px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .dock-container { padding: 0 20px; }
-
-        .dock {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border-radius: 32px;
-            padding: 12px 16px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        /* ---------------- WIDGETS ---------------- */
-        .widgets-container {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        /* Spotify Widget */
-        .spotify-widget {
-            background: rgba(18, 18, 18, 0.85);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-radius: 24px;
-            padding: 16px;
-            color: white;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .spotify-top {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .spotify-cover {
-            width: 54px;
-            height: 54px;
-            border-radius: 12px;
-            background: #282828;
-            overflow: hidden;
-            flex-shrink: 0;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
-
-        .spotify-cover img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .spotify-info {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .spotify-title {
-            font-size: 15px;
-            font-weight: 700;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .spotify-artist {
-            font-size: 13px;
-            color: #b3b3b3;
-            margin-top: 2px;
-        }
-
-        .spotify-progress-bar {
-            width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .spotify-progress {
-            width: 45%;
-            height: 100%;
-            background: #1db954;
-            border-radius: 2px;
-        }
-
-        .spotify-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 10px;
-        }
-
-        .spotify-btn {
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .spotify-btn.play {
-            width: 38px;
-            height: 38px;
-            background: #ffffff;
-            color: #000000;
-            border-radius: 50%;
-        }
-
-        /* Photo Slideshow Widget */
-        .photo-widget {
-            position: relative;
-            width: 100%;
-            height: 180px;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .photo-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-        }
-
-        .photo-slide.active { opacity: 1; }
-
-        .widget-badge {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            padding: 4px 10px;
-            border-radius: 12px;
-            color: white;
-            font-size: 11px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            z-index: 2;
-        }
-
-        /* Home Indicator (Bar Bottom) */
-        .home-indicator-container {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 35px;
-            z-index: 150;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .home-indicator {
-            width: 135px;
-            height: 5px;
-            background-color: #ffffff;
-            border-radius: 3px;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-8px); }
-            60% { transform: translateY(-4px); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-10px); }
-            40%, 80% { transform: translateX(10px); }
-        }
-
-        .shake { animation: shake 0.4s ease-in-out; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -595,8 +19,19 @@
             </div>
         </div>
 
-        <!-- Dynamic Island -->
         <div class="dynamic-island"></div>
+
+        <!-- Banner Pop-Up iMessage -->
+        <div class="imessage-banner" id="imessage-banner" onclick="openImessModal()">
+            <div class="imess-icon-small">💬</div>
+            <div class="imess-banner-content">
+                <div class="imess-banner-header">
+                    <span class="imess-sender">markio</span>
+                    <span class="imess-time">sekarang</span>
+                </div>
+                <div class="imess-banner-body">kak, kamu jadi ke taman ga</div>
+            </div>
+        </div>
 
         <!-- Lockscreen -->
         <div class="screen" id="lockscreen">
@@ -604,17 +39,11 @@
                 <div class="lock-date">RABU, 28 OKTOBER</div>
                 <div class="lock-time">14.12</div>
             </div>
-
             <div class="lock-bottom-area">
                 <div class="swipe-hint">Geser ke atas untuk membuka</div>
-
                 <div class="lock-actions">
-                    <div class="action-btn" id="flashlight-btn" onclick="toggleFlashlight(event)">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-2-4H8L6 6"/><path d="M6 6v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6"/><line x1="12" y1="10" x2="12" y2="14"/></svg>
-                    </div>
-                    <div class="action-btn" onclick="openCamera(event)">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                    </div>
+                    <div class="action-btn" id="flashlight-btn" onclick="toggleFlashlight(event)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6l-2-4H8L6 6"/><path d="M6 6v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6"/><line x1="12" y1="10" x2="12" y2="14"/></svg></div>
+                    <div class="action-btn" onclick="alert('Membuka Kamera...')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div>
                 </div>
             </div>
         </div>
@@ -623,14 +52,9 @@
         <div class="screen" id="passcode-screen">
             <div class="passcode-title">Masukkan Passcode</div>
             <div class="error-message" id="error-msg"></div>
-            
             <div class="dots-container" id="dots-container">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
             </div>
-
             <div class="keypad">
                 <div class="key-btn" onclick="pressKey('1')"><span class="key-num">1</span></div>
                 <div class="key-btn" onclick="pressKey('2')"><span class="key-num">2</span><span class="key-sub">ABC</span></div>
@@ -643,46 +67,32 @@
                 <div class="key-btn" onclick="pressKey('9')"><span class="key-num">9</span><span class="key-sub">WXYZ</span></div>
                 <div class="key-btn" style="visibility: hidden;"></div>
                 <div class="key-btn" onclick="pressKey('0')"><span class="key-num">0</span></div>
-                <div class="key-btn" style="background:transparent; backdrop-filter:none;" onclick="deleteKey()"><span style="font-size:14px;">Hapus</span></div>
+                <div class="key-btn" style="background:transparent;" onclick="deleteKey()"><span style="font-size:14px;">Hapus</span></div>
             </div>
         </div>
 
-        <!-- Homescreen (2 Slide Pages) -->
+        <!-- Homescreen -->
         <div class="screen" id="homescreen">
             <div class="homescreen-slider" id="slider" onscroll="handleScroll()">
-                
-                <!-- SLIDE 1 (KIRI): WIDGETS -->
+                <!-- Slide 1: Widgets -->
                 <div class="slide-page">
                     <div class="widgets-container">
-                        <!-- Spotify Pop-up Widget -->
                         <div class="spotify-widget">
                             <div class="spotify-top">
-                                <div class="spotify-cover">
-                                    <img src="https://i.scdn.co/image/ab67616d0000b2734125f32a0c20f18d7f76d4f9" alt="To the bone" onerror="this.src='https://i.ibb.co.com/93pHXYwV/IMG-20261028-WA0027.jpg'">
-                                </div>
+                                <div class="spotify-cover"><img src="https://i.scdn.co/image/ab67616d0000b2734125f32a0c20f18d7f76d4f9" alt="To the bone"></div>
                                 <div class="spotify-info">
                                     <div class="spotify-title">To the Bone</div>
                                     <div class="spotify-artist">Pamungkas</div>
                                 </div>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.18-.1.2-.78-.42-.18-.6.2-1.2.78-1.38 4.26-1.26 11.28-1.02 15.72 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.479.659.301 1.02z"/></svg>
                             </div>
-                            <div class="spotify-progress-bar">
-                                <div class="spotify-progress"></div>
-                            </div>
+                            <div class="spotify-progress-bar"><div class="spotify-progress"></div></div>
                             <div class="spotify-controls">
-                                <button class="spotify-btn">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
-                                </button>
-                                <button class="spotify-btn play">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-                                </button>
-                                <button class="spotify-btn">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16 18h2V6h-2zm-11-6l8.5 6V6z"/></svg>
-                                </button>
+                                <button class="spotify-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+                                <button class="spotify-btn play"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg></button>
+                                <button class="spotify-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 18h2V6h-2zm-11-6l8.5 6V6z"/></svg></button>
                             </div>
                         </div>
-
-                        <!-- Auto-Slideshow Photo Widget -->
                         <div class="photo-widget">
                             <div class="widget-badge">🖼️ Galeri Foto</div>
                             <img src="https://i.ibb.co.com/93pHXYwV/IMG-20261028-WA0027.jpg" class="photo-slide active" alt="Foto 1">
@@ -692,257 +102,82 @@
                     </div>
                 </div>
 
-                <!-- SLIDE 2 (KANAN): APP GRID -->
+                <!-- Slide 2: Apps & Safari Widget -->
                 <div class="slide-page">
+                    <div class="safari-search-widget" onclick="alert('Cari di Safari...')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                        <input type="text" placeholder="Cari di Safari atau ketik URL..." readonly>
+                    </div>
+
                     <div class="app-grid">
-                        <div class="app-item"><div class="app-icon" style="background: #000;"><svg viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div><span class="app-name">X</span></div>
-                        <div class="app-item"><div class="app-icon" style="background: #FFF000;"><svg viewBox="0 0 100 100" fill="#000"><path d="M50 10 C25 10 15 35 15 55 C15 75 35 90 50 90 C65 90 85 75 85 55 C85 35 75 10 50 10 Z M35 45 C40 45 40 55 35 55 C30 55 30 45 35 45 Z M65 45 C70 45 70 55 65 55 C60 55 60 45 65 45 Z M50 75 C40 75 35 65 50 65 C65 65 60 75 50 75 Z"/></svg></div><span class="app-name">Grindr</span></div>
-                        <div class="app-item"><div class="app-icon" style="background: linear-gradient(135deg, #fff3b0, #ffd166);"><svg viewBox="0 0 24 24" fill="#555"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></div><span class="app-name">Notes</span></div>
-                        <div class="app-item"><div class="app-icon" style="background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%);"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div><span class="app-name">Instagram</span></div>
-                        <div class="app-item"><div class="app-icon" style="background: linear-gradient(#1e90ff, #007aff);"><svg viewBox="0 0 24 24" fill="white"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div><span class="app-name">Email</span></div>
-                        <div class="app-item"><div class="app-icon" style="background: linear-gradient(#34c759, #30d158);"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="white"/></svg></div><span class="app-name">Find My</span></div>
-                        <div class="app-item"><div class="app-icon" style="background: #121212;"><svg viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.18-.1.2-.78-.42-.18-.6.2-1.2.78-1.38 4.26-1.26 11.28-1.02 15.72 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg></div><span class="app-name">Spotify</span></div>
-                        <div class="app-item"><div class="app-icon" style="background: linear-gradient(#003366, #00509d);"><svg viewBox="0 0 24 24" fill="white"><path d="M4 10h16v2H4zm0 4h16v2H4zm0 4h16v2H4zm0-12h16v2H4zm8-6L2 6v2h20V6z"/></svg></div><span class="app-name">mBanking</span></div>
-                        <div class="app-item"><div class="app-icon" style="background: linear-gradient(#34c759, #28a745);"><svg viewBox="0 0 24 24" fill="white"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></div><span class="app-name">Phone</span></div>
-                        <div class="app-item"><div class="app-icon" style="background: #fff;"><svg viewBox="0 0 24 24" fill="#000"><path d="M12.09 13.118l-2.28-4.737-2.39 4.737h4.67zm7.25 4.882h2.66l-6.84-14h-2.82l-3.32 6.83-3.34-6.83H2.86l-6.86 14h2.67l1.39-3.08h6.81l1.33 3.08h2.6l1.35-3.08h6.82l1.37 3.08z"/></svg></div><span class="app-name">Wiki</span></div>
-                        <div class="app-item"><div class="app-icon" style="background: linear-gradient(#34c759, #28a745);"><svg viewBox="0 0 24 24" fill="white"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-2.2 2.2a15.053 15.053 0 0 1-6.59-6.59l2.2-2.21a.96.96 0 0 0 .25-1.01A11.36 11.36 0 0 1 8.57 3.9c0-.55-.45-1-1-1H3.99c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.52c0-.55-.45-1-1-1z"/></svg></div><span class="app-name">Call</span></div>
-                        <div class="app-item"><div class="app-icon" style="background: linear-gradient(#34c759, #30d158);"><svg viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div><span class="app-name">iMess</span></div>
-                        <div class="app-item"><div class="app-icon" style="background: linear-gradient(#8e8e93, #636366);"><svg viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="3.2"/><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg></div><span class="app-name">Camera</span></div>
-                        <div class="app-item"><div class="app-icon" style="background: #fff;"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#ff9500"/><circle cx="12" cy="12" r="6" fill="#ff2d55"/><circle cx="12" cy="12" r="3" fill="#5856d6"/></svg></div><span class="app-name">Gallery</span></div>
-                        <div class="app-item"><div class="app-icon" style="background: linear-gradient(#ff2d55, #cc1133);"><svg viewBox="0 0 24 24" fill="white"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg></div><span class="app-name">Voicenote</span></div>
-                        <div class="app-item"><div class="app-icon" style="background: linear-gradient(#8e8e93, #48484a);"><svg viewBox="0 0 24 24" fill="white"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></div><span class="app-name">Settings</span></div>
+                        <div class="app-item"><div class="app-icon" style="background:#000;"><svg viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div><span class="app-name">X</span></div>
+                        <div class="app-item"><div class="app-icon" style="background:#FFF000;"><svg viewBox="0 0 100 100" fill="#000"><path d="M50 10 C25 10 15 35 15 55 C15 75 35 90 50 90 C65 90 85 75 85 55 C85 35 75 10 50 10 Z"/></svg></div><span class="app-name">Grindr</span></div>
+                        <div class="app-item"><div class="app-icon" style="background:linear-gradient(135deg,#fff3b0,#ffd166);"><svg viewBox="0 0 24 24" fill="#555"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg></div><span class="app-name">Notes</span></div>
+                        <div class="app-item"><div class="app-icon" style="background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285AEB 90%);"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/></svg></div><span class="app-name">Instagram</span></div>
+                        <div class="app-item"><div class="app-icon" style="background:linear-gradient(#1e90ff,#007aff);"><svg viewBox="0 0 24 24" fill="white"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/></svg></div><span class="app-name">Email</span></div>
+                        <div class="app-item"><div class="app-icon" style="background:linear-gradient(#34c759,#30d158);"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg></div><span class="app-name">Find My</span></div>
+                        <div class="app-item"><div class="app-icon" style="background:#121212;"><svg viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0z"/></svg></div><span class="app-name">Spotify</span></div>
+                        <div class="app-item"><div class="app-icon" style="background:linear-gradient(#003366,#00509d);"><svg viewBox="0 0 24 24" fill="white"><path d="M4 10h16v2H4zm0 4h16v2H4z"/></svg></div><span class="app-name">mBanking</span></div>
+                        <div class="app-item"><div class="app-icon" style="background:linear-gradient(#34c759,#28a745);"><svg viewBox="0 0 24 24" fill="white"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2z"/></svg></div><span class="app-name">Phone</span></div>
+                        <div class="app-item"><div class="app-icon" style="background:#fff;"><svg viewBox="0 0 24 24" fill="#000"><path d="M12.09 13.118l-2.28-4.737-2.39 4.737h4.67z"/></svg></div><span class="app-name">Wiki</span></div>
+                        <div class="app-item"><div class="app-icon" style="background:linear-gradient(#34c759,#28a745);"><svg viewBox="0 0 24 24" fill="white"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-2.2 2.2z"/></svg></div><span class="app-name">Call</span></div>
+                        
+                        <div class="app-item" onclick="openImessModal()">
+                            <div class="app-icon" style="background:linear-gradient(#34c759,#30d158);">
+                                <svg viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14z"/></svg>
+                            </div>
+                            <span class="app-name">iMess</span>
+                        </div>
+
+                        <div class="app-item"><div class="app-icon" style="background:linear-gradient(#8e8e93,#636366);"><svg viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="3.2"/></svg></div><span class="app-name">Camera</span></div>
+                        <div class="app-item"><div class="app-icon" style="background:#fff;"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#ff9500"/></svg></div><span class="app-name">Gallery</span></div>
+                        <div class="app-item"><div class="app-icon" style="background:linear-gradient(#ff2d55,#cc1133);"><svg viewBox="0 0 24 24" fill="white"><path d="M12 14c1.66 0 3-1.34 3-3V5z"/></svg></div><span class="app-name">Voicenote</span></div>
+                        <div class="app-item"><div class="app-icon" style="background:linear-gradient(#8e8e93,#48484a);"><svg viewBox="0 0 24 24" fill="white"><path d="M19.14 12.94c.04-.3.06-.61.06-.94z"/></svg></div><span class="app-name">Settings</span></div>
                     </div>
                 </div>
-
             </div>
 
-            <!-- Dots Indicator -->
             <div class="page-dots">
                 <div class="page-dot active" id="dot1"></div>
                 <div class="page-dot" id="dot2"></div>
             </div>
 
-            <!-- Dock Bottom -->
             <div class="dock-container">
                 <div class="dock">
-                    <div class="app-icon" style="background: linear-gradient(#34c759, #28a745); width:52px; height:52px;"><svg viewBox="0 0 24 24" fill="white" width="30"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-2.2 2.2a15.053 15.053 0 0 1-6.59-6.59l2.2-2.21a.96.96 0 0 0 .25-1.01A11.36 11.36 0 0 1 8.57 3.9c0-.55-.45-1-1-1H3.99c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.52c0-.55-.45-1-1-1z"/></svg></div>
-                    <div class="app-icon" style="background: linear-gradient(#34c759, #30d158); width:52px; height:52px;"><svg viewBox="0 0 24 24" fill="white" width="30"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>
-                    <div class="app-icon" style="background: #121212; width:52px; height:52px;"><svg viewBox="0 0 24 24" fill="#1DB954" width="30"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.18-.1.2-.78-.42-.18-.6.2-1.2.78-1.38 4.26-1.26 11.28-1.02 15.72 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg></div>
-                    <div class="app-icon" style="background: linear-gradient(#5856d6, #3b3b98); width:52px; height:52px;"><svg viewBox="0 0 24 24" fill="white" width="30"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></div>
+                    <div class="app-icon" style="background:linear-gradient(#34c759,#28a745); width:52px; height:52px;"><svg viewBox="0 0 24 24" fill="white" width="28"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-2.2 2.2z"/></svg></div>
+                    <div class="app-icon" style="background:linear-gradient(#34c759,#30d158); width:52px; height:52px;" onclick="openImessModal()"><svg viewBox="0 0 24 24" fill="white" width="28"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14z"/></svg></div>
+                    <div class="app-icon" style="background:#121212; width:52px; height:52px;"><svg viewBox="0 0 24 24" fill="#1DB954" width="28"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0z"/></svg></div>
+                    <div class="app-icon" style="background:linear-gradient(#5856d6,#3b3b98); width:52px; height:52px;"><svg viewBox="0 0 24 24" fill="white" width="28"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg></div>
                 </div>
             </div>
         </div>
 
-        <!-- Home Indicator / Indicator Bar -->
+        <!-- Layar Chat iMessage -->
+        <div class="imess-modal" id="imess-modal">
+            <div class="imess-header">
+                <button class="imess-back-btn" onclick="closeImessModal()">‹ Kembali</button>
+                <div class="imess-contact-info">
+                    <div class="imess-avatar">M</div>
+                    <div class="imess-name">markio</div>
+                </div>
+            </div>
+            <div class="imess-chat-body" id="imess-chat-body">
+                <div class="chat-bubble received">
+                    kak, kamu jadi ke taman ga
+                    <span class="chat-time">14.12</span>
+                </div>
+            </div>
+            <div class="imess-input-bar">
+                <input type="text" placeholder="iMessage" id="chat-input" onkeypress="if(event.key==='Enter') sendChatMessage()">
+                <button onclick="sendChatMessage()">Send</button>
+            </div>
+        </div>
+
         <div class="home-indicator-container" id="swipe-area">
             <div class="home-indicator"></div>
         </div>
     </div>
 
-    <script>
-        const CORRECT_PASSCODE = "1007";
-        let currentInput = "";
-        let audioCtx = null;
-        let isLockscreen = true;
-
-        // Sound FX
-        function playClickSound() {
-            try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.04);
-
-                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
-
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.04);
-            } catch (e) {}
-        }
-
-        // ==========================================
-        // REAL-TIME TOUCH & DRAG SWIPE UP SYSTEM
-        // ==========================================
-        const iphoneFrame = document.getElementById('iphone-frame');
-        const passcodeScreen = document.getElementById('passcode-screen');
-        const swipeArea = document.getElementById('swipe-area');
-
-        let isDragging = false;
-        let startY = 0;
-        let currentY = 0;
-        let screenHeight = iphoneFrame.clientHeight;
-
-        function getClientY(e) {
-            return e.touches ? e.touches[0].clientY : e.clientY;
-        }
-
-        function onDragStart(e) {
-            if (!isLockscreen) return;
-            // Ignore if clicking lock buttons
-            if (e.target.closest('.action-btn')) return;
-
-            isDragging = true;
-            startY = getClientY(e);
-            currentY = startY;
-            screenHeight = iphoneFrame.clientHeight;
-
-            passcodeScreen.classList.add('dragging');
-        }
-
-        function onDragMove(e) {
-            if (!isDragging || !isLockscreen) return;
-            currentY = getClientY(e);
-            let deltaY = startY - currentY;
-
-            if (deltaY > 0) {
-                // Dragging UP -> pull passcode screen up
-                let progress = Math.min(deltaY / screenHeight, 1);
-                let translateY = (1 - progress) * 100;
-                passcodeScreen.style.transform = `translateY(${translateY}%)`;
-                passcodeScreen.style.opacity = progress * 1.2;
-            }
-        }
-
-        function onDragEnd() {
-            if (!isDragging || !isLockscreen) return;
-            isDragging = false;
-            passcodeScreen.classList.remove('dragging');
-
-            let deltaY = startY - currentY;
-
-            // If dragged up by at least 15% of height OR simple click (deltaY ~ 0)
-            if (deltaY > screenHeight * 0.15 || Math.abs(deltaY) < 10) {
-                showPasscodeScreen();
-            } else {
-                // Snap back down
-                passcodeScreen.style.transform = '';
-                passcodeScreen.style.opacity = '';
-            }
-        }
-
-        // Touch Listeners
-        iphoneFrame.addEventListener('touchstart', onDragStart, { passive: true });
-        iphoneFrame.addEventListener('touchmove', onDragMove, { passive: true });
-        iphoneFrame.addEventListener('touchend', onDragEnd, { passive: true });
-
-        // Mouse Listeners
-        iphoneFrame.addEventListener('mousedown', onDragStart);
-        window.addEventListener('mousemove', onDragMove);
-        window.addEventListener('mouseup', onDragEnd);
-
-        // Tap fallback on indicator or anywhere on lockscreen
-        swipeArea.addEventListener('click', () => {
-            if (isLockscreen) showPasscodeScreen();
-        });
-
-        function showPasscodeScreen() {
-            passcodeScreen.style.transform = '';
-            passcodeScreen.style.opacity = '';
-            passcodeScreen.classList.add('active');
-        }
-
-        // Passcode Input Logic
-        function pressKey(num) {
-            playClickSound();
-            if (currentInput.length < 4) {
-                currentInput += num;
-                updateDots();
-                if (currentInput.length === 4) {
-                    setTimeout(checkPasscode, 150);
-                }
-            }
-        }
-
-        function deleteKey() {
-            playClickSound();
-            if (currentInput.length > 0) {
-                currentInput = currentInput.slice(0, -1);
-                updateDots();
-                document.getElementById('error-msg').innerText = "";
-            }
-        }
-
-        function updateDots() {
-            const dots = document.querySelectorAll('.dot');
-            dots.forEach((dot, index) => {
-                if (index < currentInput.length) {
-                    dot.classList.add('filled');
-                } else {
-                    dot.classList.remove('filled');
-                }
-            });
-        }
-
-        function checkPasscode() {
-            const errorMsg = document.getElementById('error-msg');
-            const dotsContainer = document.getElementById('dots-container');
-
-            if (currentInput === CORRECT_PASSCODE) {
-                isLockscreen = false;
-                passcodeScreen.classList.remove('active');
-                document.getElementById('lockscreen').style.opacity = '0';
-                document.getElementById('lockscreen').style.pointerEvents = 'none';
-                document.getElementById('homescreen').classList.add('unlocked');
-                errorMsg.innerText = "";
-            } else {
-                errorMsg.innerText = "Passcode salah, cek kembali akun author";
-                dotsContainer.classList.add('shake');
-                
-                setTimeout(() => {
-                    dotsContainer.classList.remove('shake');
-                    currentInput = "";
-                    updateDots();
-                }, 400);
-            }
-        }
-
-        // Flashlight Toggle
-        function toggleFlashlight(e) {
-            e.stopPropagation();
-            const btn = document.getElementById('flashlight-btn');
-            btn.classList.toggle('active');
-        }
-
-        function openCamera(e) {
-            e.stopPropagation();
-            alert('Membuka Kamera...');
-        }
-
-        // Slide Scroll Handler (Page Indicator)
-        function handleScroll() {
-            const slider = document.getElementById('slider');
-            const dot1 = document.getElementById('dot1');
-            const dot2 = document.getElementById('dot2');
-
-            if (slider.scrollLeft > slider.clientWidth / 2) {
-                dot1.classList.remove('active');
-                dot2.classList.add('active');
-            } else {
-                dot1.classList.add('active');
-                dot2.classList.remove('active');
-            }
-        }
-
-        // Photo Slideshow Widget Otomatis (Setiap 3 Detik)
-        let currentPhotoIndex = 0;
-        const photoSlides = document.querySelectorAll('.photo-slide');
-
-        setInterval(() => {
-            if (photoSlides.length > 0) {
-                photoSlides[currentPhotoIndex].classList.remove('active');
-                currentPhotoIndex = (currentPhotoIndex + 1) % photoSlides.length;
-                photoSlides[currentPhotoIndex].classList.add('active');
-            }
-        }, 3000);
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
