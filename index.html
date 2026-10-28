@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>iPhone 15</title>
+    <title>iPhone 15 Simulator</title>
     <style>
         :root {
             --sf-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
@@ -29,18 +29,14 @@
             align-items: center;
         }
 
-        /* Frame Utama Simulator iPhone 15 */
+        /* Frame Utama iPhone 15 */
         .iphone-frame {
             position: relative;
             width: 100%;
             height: 100%;
             height: 100dvh;
             max-width: 430px;
-            background-color: #1a1a1a;
-            /* Gradient cadangan jika gambar lambat dimuat */
-            background-image: linear-gradient(180deg, #1c2e4a 0%, #020208 100%);
-            background-size: cover;
-            background-position: center;
+            background-color: #000;
             overflow: hidden;
             touch-action: none;
         }
@@ -55,20 +51,7 @@
             }
         }
 
-        /* Wallpaper Background Layer */
-        .wallpaper-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('https://i.ibb.co.com/KjnQVSrS/wallpaper.jpg'), linear-gradient(180deg, #2b3a4a 0%, #0a0c10 100%);
-            background-size: cover;
-            background-position: center;
-            z-index: 1;
-        }
-
-        /* Status Bar (Jam 14.12 & Ikon) */
+        /* Status Bar */
         .status-bar {
             position: absolute;
             top: 0;
@@ -86,20 +69,14 @@
             pointer-events: none;
         }
 
-        .status-left {
-            margin-top: 6px;
-        }
-
+        .status-left { margin-top: 6px; }
         .status-right {
             display: flex;
             align-items: center;
             gap: 6px;
             margin-top: 6px;
         }
-
-        .status-right svg {
-            fill: #ffffff;
-        }
+        .status-right svg { fill: #ffffff; }
 
         /* Dynamic Island */
         .dynamic-island {
@@ -114,7 +91,7 @@
             z-index: 101;
         }
 
-        /* Layer Tampilan */
+        /* Base Screen Layer */
         .screen {
             position: absolute;
             top: 0;
@@ -124,14 +101,17 @@
             transition: transform 0.4s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.4s ease;
         }
 
-        /* Lockscreen */
+        /* ---------------- LOCKSCREEN ---------------- */
         #lockscreen {
             z-index: 10;
+            background-image: url('https://i.ibb.co.com/G35y8YHN/6bb64ebbf4b46463a682d83afd6cd03f.jpg');
+            background-size: cover;
+            background-position: center;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 75px 20px 30px 20px;
+            padding: 75px 20px 25px 20px;
             color: #ffffff;
             text-shadow: 0 2px 10px rgba(0,0,0,0.4);
         }
@@ -158,7 +138,44 @@
             letter-spacing: -2px;
         }
 
-        /* Passcode Screen */
+        /* Lockscreen Action Buttons (Flashlight & Camera) */
+        .lock-actions {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 15px;
+            margin-bottom: 10px;
+            z-index: 11;
+        }
+
+        .action-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+        }
+
+        .action-btn.active {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .swipe-hint {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            opacity: 0.85;
+            animation: bounce 2s infinite;
+        }
+
+        /* ---------------- PASSCODE SCREEN ---------------- */
         #passcode-screen {
             z-index: 20;
             background: rgba(0, 0, 0, 0.5);
@@ -210,11 +227,8 @@
             transition: background-color 0.2s;
         }
 
-        .dot.filled {
-            background-color: #ffffff;
-        }
+        .dot.filled { background-color: #ffffff; }
 
-        /* Keypad iOS */
         .keypad {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -237,9 +251,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        .key-btn:active {
-            background: rgba(255, 255, 255, 0.4);
-        }
+        .key-btn:active { background: rgba(255, 255, 255, 0.4); }
 
         .key-num {
             font-size: 30px;
@@ -254,13 +266,16 @@
             margin-top: 2px;
         }
 
-        /* Homescreen */
+        /* ---------------- HOMESCREEN ---------------- */
         #homescreen {
             z-index: 5;
+            background-image: url('https://i.ibb.co.com/M5WzWbhk/040571acff86430653fb4256f45bd105.jpg');
+            background-size: cover;
+            background-position: center;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 75px 20px 35px 20px;
+            padding: 60px 0 20px 0;
             opacity: 0;
             transform: scale(1.1);
             pointer-events: none;
@@ -273,10 +288,52 @@
             pointer-events: auto;
         }
 
+        /* Slider Homescreen 2 Halaman */
+        .homescreen-slider {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+        }
+
+        .homescreen-slider::-webkit-scrollbar { display: none; }
+
+        .slide-page {
+            min-width: 100%;
+            scroll-snap-align: start;
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Page Dots Indicator */
+        .page-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .page-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transition: background 0.3s;
+        }
+
+        .page-dot.active {
+            background: #ffffff;
+        }
+
+        /* App Grid */
         .app-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 22px 14px;
+            gap: 20px 14px;
             justify-items: center;
         }
 
@@ -284,7 +341,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
 
         .app-icon {
@@ -295,8 +352,13 @@
             justify-content: center;
             align-items: center;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            font-size: 26px;
             color: white;
+            overflow: hidden;
+        }
+
+        .app-icon svg {
+            width: 38px;
+            height: 38px;
         }
 
         .app-name {
@@ -304,6 +366,15 @@
             font-size: 11px;
             font-weight: 500;
             text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+            text-align: center;
+            max-width: 68px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dock-container {
+            padding: 0 20px;
         }
 
         .dock {
@@ -315,16 +386,158 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            margin-bottom: 5px;
         }
 
-        /* Home Indicator (Bar Area untuk Swipe) */
+        /* ---------------- WIDGETS ---------------- */
+        .widgets-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        /* Spotify Widget */
+        .spotify-widget {
+            background: rgba(18, 18, 18, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 24px;
+            padding: 16px;
+            color: white;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .spotify-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .spotify-cover {
+            width: 54px;
+            height: 54px;
+            border-radius: 12px;
+            background: #282828;
+            overflow: hidden;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .spotify-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .spotify-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .spotify-title {
+            font-size: 15px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .spotify-artist {
+            font-size: 13px;
+            color: #b3b3b3;
+            margin-top: 2px;
+        }
+
+        .spotify-progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .spotify-progress {
+            width: 45%;
+            height: 100%;
+            background: #1db954;
+            border-radius: 2px;
+        }
+
+        .spotify-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .spotify-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spotify-btn.play {
+            width: 38px;
+            height: 38px;
+            background: #ffffff;
+            color: #000000;
+            border-radius: 50%;
+        }
+
+        /* Photo Slideshow Widget */
+        .photo-widget {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .photo-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .photo-slide.active { opacity: 1; }
+
+        .widget-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 4px 10px;
+            border-radius: 12px;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Home Indicator (Bar Area) */
         .home-indicator-container {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 40px;
+            height: 30px;
             z-index: 150;
             display: flex;
             justify-content: center;
@@ -339,14 +552,6 @@
             border-radius: 3px;
         }
 
-        .swipe-hint {
-            font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 10px;
-            opacity: 0.85;
-            animation: bounce 2s infinite;
-        }
-
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
             40% { transform: translateY(-8px); }
@@ -359,17 +564,12 @@
             40%, 80% { transform: translateX(10px); }
         }
 
-        .shake {
-            animation: shake 0.4s ease-in-out;
-        }
+        .shake { animation: shake 0.4s ease-in-out; }
     </style>
 </head>
 <body>
 
     <div class="iphone-frame" id="iphone-frame">
-        <!-- Layer Wallpaper Custom -->
-        <div class="wallpaper-layer"></div>
-
         <!-- Status Bar -->
         <div class="status-bar">
             <div class="status-left">14.12</div>
@@ -389,7 +589,18 @@
                 <div class="lock-date">RABU, 28 OKTOBER</div>
                 <div class="lock-time">14.12</div>
             </div>
+
             <div class="swipe-hint">Geser ke atas untuk membuka</div>
+
+            <!-- Flashlight & Camera Buttons -->
+            <div class="lock-actions">
+                <div class="action-btn" id="flashlight-btn" onclick="toggleFlashlight(event)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-2-4H8L6 6"/><path d="M6 6v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6"/><line x1="12" y1="10" x2="12" y2="14"/></svg>
+                </div>
+                <div class="action-btn" onclick="alert('Membuka Kamera...')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                </div>
+            </div>
         </div>
 
         <!-- Passcode Screen -->
@@ -420,138 +631,15 @@
             </div>
         </div>
 
-        <!-- Homescreen -->
+        <!-- Homescreen (2 Slide Pages) -->
         <div class="screen" id="homescreen">
-            <div class="app-grid">
-                <div class="app-item"><div class="app-icon" style="background: linear-gradient(#34c759, #28a745);">📞</div><span class="app-name">Telepon</span></div>
-                <div class="app-item"><div class="app-icon" style="background: linear-gradient(#007aff, #0056b3);">💬</div><span class="app-name">Pesan</span></div>
-                <div class="app-item"><div class="app-icon" style="background: linear-gradient(#5856d6, #3b3b98);">📷</div><span class="app-name">Kamera</span></div>
-                <div class="app-item"><div class="app-icon" style="background: linear-gradient(#ff9500, #cc7a00);">🖼️</div><span class="app-name">Foto</span></div>
-                <div class="app-item"><div class="app-icon" style="background: linear-gradient(#ff2d55, #c11c3d);">🎵</div><span class="app-name">Musik</span></div>
-                <div class="app-item"><div class="app-icon" style="background: linear-gradient(#5ac8fa, #17a2b8);">⚙️</div><span class="app-name">Pengaturan</span></div>
-            </div>
-
-            <div class="dock">
-                <div class="app-icon" style="background: linear-gradient(#34c759, #28a745); width:52px; height:52px;">📞</div>
-                <div class="app-icon" style="background: linear-gradient(#007aff, #0056b3); width:52px; height:52px;">💬</div>
-                <div class="app-icon" style="background: linear-gradient(#ff9500, #cc7a00); width:52px; height:52px;">🌐</div>
-                <div class="app-icon" style="background: linear-gradient(#ff2d55, #c11c3d); width:52px; height:52px;">🎵</div>
-            </div>
-        </div>
-
-        <!-- Home Indicator / Area Swipe -->
-        <div class="home-indicator-container" id="swipe-area">
-            <div class="home-indicator"></div>
-        </div>
-    </div>
-
-    <script>
-        const CORRECT_PASSCODE = "1007";
-        let currentInput = "";
-        let audioCtx = null;
-        let isLockscreen = true;
-
-        // Sound Effect saat Tombol Ditekan
-        function playClickSound() {
-            try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.04);
-
-                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
-
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.04);
-            } catch (e) {}
-        }
-
-        // Deteksi Usap Layar ke Atas (Swipe Up)
-        let startY = 0;
-        const frame = document.getElementById('iphone-frame');
-
-        frame.addEventListener('touchstart', (e) => {
-            startY = e.touches[0].clientY;
-        }, { passive: true });
-
-        frame.addEventListener('touchend', (e) => {
-            const endY = e.changedTouches[0].clientY;
-            if (startY - endY > 40 && isLockscreen) {
-                showPasscodeScreen();
-            }
-        }, { passive: true });
-
-        document.getElementById('swipe-area').addEventListener('click', () => {
-            if (isLockscreen) showPasscodeScreen();
-        });
-
-        function showPasscodeScreen() {
-            document.getElementById('passcode-screen').classList.add('active');
-        }
-
-        // Logika Input Keypad
-        function pressKey(num) {
-            playClickSound();
-            if (currentInput.length < 4) {
-                currentInput += num;
-                updateDots();
+            <div class="homescreen-slider" id="slider" onscroll="handleScroll()">
                 
-                if (currentInput.length === 4) {
-                    setTimeout(checkPasscode, 150);
-                }
-            }
-        }
-
-        function deleteKey() {
-            playClickSound();
-            if (currentInput.length > 0) {
-                currentInput = currentInput.slice(0, -1);
-                updateDots();
-                document.getElementById('error-msg').innerText = "";
-            }
-        }
-
-        function updateDots() {
-            const dots = document.querySelectorAll('.dot');
-            dots.forEach((dot, index) => {
-                if (index < currentInput.length) {
-                    dot.classList.add('filled');
-                } else {
-                    dot.classList.remove('filled');
-                }
-            });
-        }
-
-        function checkPasscode() {
-            const errorMsg = document.getElementById('error-msg');
-            const dotsContainer = document.getElementById('dots-container');
-
-            if (currentInput === CORRECT_PASSCODE) {
-                isLockscreen = false;
-                document.getElementById('passcode-screen').classList.remove('active');
-                document.getElementById('lockscreen').style.opacity = '0';
-                document.getElementById('homescreen').classList.add('unlocked');
-                errorMsg.innerText = "";
-            } else {
-                errorMsg.innerText = "Passcode salah, cek kembali akun author";
-                dotsContainer.classList.add('shake');
-                
-                setTimeout(() => {
-                    dotsContainer.classList.remove('shake');
-                    currentInput = "";
-                    updateDots();
-                }, 400);
-            }
-        }
-    </script>
-</body>
-</html>
+                <!-- SLIDE 1 (KIRI): WIDGETS -->
+                <div class="slide-page">
+                    <div class="widgets-container">
+                        <!-- Spotify Pop-up Widget -->
+                        <div class="spotify-widget">
+                            <div class="spotify-top">
+                                <div class="spotify-cover">
+                         
