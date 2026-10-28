@@ -1,373 +1,114 @@
-```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iPhone 15 Web Simulator</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome CDN untuk Ikon iOS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>iPhone 15 Simulator</title>
     <style>
-        /* Pengaturan Font SF Pro / Apple System Font */
-        body, button, input, div {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'SF Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        :root {
+            --sf-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
             user-select: none;
             -webkit-user-select: none;
+            font-family: var(--sf-font);
         }
 
-        /* Styling Frame iPhone 15 Pro */
-        .iphone-container {
-            width: 393px;
-            height: 852px;
-            border-radius: 55px;
-            box-shadow: 
-                0 0 0 12px #2d2d2d,
-                0 0 0 15px #4a4a4f,
-                0 25px 50px -12px rgba(0, 0, 0, 0.7);
-            position: relative;
-            overflow: hidden;
-            background: #000;
-            transition: all 0.3s ease;
-        }
-
-        /* Bezel Layar */
-        .iphone-screen {
+        body, html {
             width: 100%;
             height: 100%;
-            border-radius: 48px;
             overflow: hidden;
-            position: relative;
             background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Container Simulator iPhone 15 */
+        .iphone-frame {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-width: 430px;
+            max-height: 932px;
+            background-color: #000;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+        }
+
+        @media (min-width: 500px) {
+            .iphone-frame {
+                border-radius: 50px;
+                border: 12px solid #2d2d2d;
+                height: 92vh;
+            }
+        }
+
+        /* Status Bar */
+        .status-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 28px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .status-left {
+            margin-top: 5px;
+        }
+
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 5px;
+        }
+
+        .status-right svg {
+            fill: #ffffff;
         }
 
         /* Dynamic Island */
         .dynamic-island {
-            width: 120px;
-            height: 35px;
-            background-color: #000;
-            border-radius: 20px;
             position: absolute;
             top: 11px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 50;
-            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 120px;
+            height: 35px;
+            background-color: #000000;
+            border-radius: 20px;
+            z-index: 101;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 12px;
             color: white;
-            box-shadow: 0 0 2px rgba(255, 255, 255, 0.1);
+            font-size: 12px;
+            cursor: pointer;
         }
 
         .dynamic-island.expanded {
-            width: 350px;
-            height: 85px;
+            width: 320px;
+            height: 80px;
             border-radius: 40px;
-            top: 10px;
             padding: 15px 20px;
         }
 
-        /* Wallpaper Overlay */
-        .lockscreen-bg {
-            background-image: url('https://i.ibb.co.com/KjnQVSrS/wallpaper.jpg');
-            background-size: cover;
-            background-position: center;
-        }
-
-        /* Home Indicator (Garis Bawah) */
-        .home-indicator {
-            width: 134px;
-            height: 5px;
-            background-color: #ffffff;
-            border-radius: 3px;
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 45;
-        }
-
-        /* Animasi Transisi Halaman */
-        .screen-slide-up {
-            transform: translateY(-100%);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .shake {
-            animation: shakeAnim 0.4s ease-in-out;
-        }
-
-        @keyframes shakeAnim {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-12px); }
-            40%, 80% { transform: translateX(12px); }
-        }
-
-        /* Keypad Button Glassmorphism */
-        .keypad-btn {
-            width: 75px;
-            height: 75px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.18);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            transition: background 0.15s ease;
-        }
-
-        .keypad-btn:active {
-            background: rgba(255, 255, 255, 0.45);
-        }
-
-        /* Lockscreen Blur Effect saat Passcode terbuka */
-        .blur-lockscreen {
-            backdrop-filter: blur(30px) brightness(0.8);
-            -webkit-backdrop-filter: blur(30px) brightness(0.8);
-        }
-
-        /* Custom Scrollbar Hide */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-    </style>
-</head>
-<body class="bg-gray-900 min-h-screen flex flex-col items-center justify-center p-2 sm:p-6 text-white select-none">
-
-    <!-- Tombol Toggle Tampilan Mockup / Full Screen -->
-    <div class="mb-4 flex gap-3 text-sm z-50">
-        <button onclick="toggleFrame()" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-full border border-gray-700 transition font-medium">
-            <i class="fa-solid fa-mobile-screen mr-2"></i>Toggle Frame iPhone
-        </button>
-        <button onclick="unlockDirectly()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-full transition font-medium">
-            Buka Kunci Otomatis (Preset Passcode: 1412)
-        </button>
-    </div>
-
-    <!-- Main iPhone Container -->
-    <div id="iphone-box" class="iphone-container">
-        <div class="iphone-screen relative">
-
-            <!-- Dynamic Island -->
-            <div id="dynamic-island" onclick="toggleDynamicIsland()" class="dynamic-island cursor-pointer">
-                <div id="di-compact" class="flex items-center justify-between w-full text-xs">
-                    <div class="flex items-center gap-1.5 text-xs text-red-500">
-                        <i class="fa-solid fa-circle text-[8px] animate-pulse"></i>
-                        <span class="text-[10px] text-gray-300 font-medium">REC</span>
-                    </div>
-                    <div class="flex items-center gap-1 text-emerald-400 text-[11px]">
-                        <i class="fa-solid fa-music"></i>
-                    </div>
-                </div>
-                <div id="di-expanded" class="hidden w-full h-full flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-gradient-to-tr from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-white text-xl">
-                            <i class="fa-solid fa-music"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs font-semibold text-white">Apple Music</p>
-                            <p class="text-[11px] text-gray-400">iPhone 15 Soundscape</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3 text-lg text-white">
-                        <i class="fa-solid fa-backward-step cursor-pointer"></i>
-                        <i class="fa-solid fa-pause cursor-pointer"></i>
-                        <i class="fa-solid fa-forward-step cursor-pointer"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Status Bar -->
-            <div class="absolute top-0 left-0 w-full px-7 pt-3.5 flex justify-between items-center text-white z-40 text-xs font-semibold tracking-tight">
-                <span id="status-bar-time" class="pl-1">14.12</span>
-                <div class="flex items-center gap-1.5 pr-1">
-                    <i class="fa-solid fa-signal text-[11px]"></i>
-                    <i class="fa-solid fa-wifi text-[11px]"></i>
-                    <div class="w-5 h-2.5 border border-white rounded-[3px] p-[1px] flex items-center">
-                        <div class="h-full w-full bg-white rounded-[1px]"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- HOME SCREEN (Layar Utama setelah Unlocked) -->
-            <div id="home-screen" class="absolute inset-0 bg-cover bg-center lockscreen-bg opacity-0 pointer-events-none transition-opacity duration-500 z-10 flex flex-col justify-between pt-16 pb-10 px-5">
-                <!-- App Grid -->
-                <div class="grid grid-cols-4 gap-y-6 gap-x-4 mt-4">
-                    <!-- Icon Item -->
-                    <div class="flex flex-col items-center cursor-pointer group" onclick="playTapSound()">
-                        <div class="w-14 h-14 bg-gradient-to-b from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg group-active:scale-95 transition">
-                            <i class="fa-solid fa-compass"></i>
-                        </div>
-                        <span class="text-[11px] text-white mt-1.5 font-medium drop-shadow">Safari</span>
-                    </div>
-
-                    <div class="flex flex-col items-center cursor-pointer group" onclick="playTapSound()">
-                        <div class="w-14 h-14 bg-gradient-to-b from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg group-active:scale-95 transition">
-                            <i class="fa-solid fa-message"></i>
-                        </div>
-                        <span class="text-[11px] text-white mt-1.5 font-medium drop-shadow">Pesan</span>
-                    </div>
-
-                    <div class="flex flex-col items-center cursor-pointer group" onclick="playTapSound()">
-                        <div class="w-14 h-14 bg-gradient-to-b from-red-400 to-pink-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg group-active:scale-95 transition">
-                            <i class="fa-solid fa-music"></i>
-                        </div>
-                        <span class="text-[11px] text-white mt-1.5 font-medium drop-shadow">Musik</span>
-                    </div>
-
-                    <div class="flex flex-col items-center cursor-pointer group" onclick="playTapSound()">
-                        <div class="w-14 h-14 bg-gradient-to-b from-gray-700 to-black border border-gray-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg group-active:scale-95 transition">
-                            <i class="fa-solid fa-camera"></i>
-                        </div>
-                        <span class="text-[11px] text-white mt-1.5 font-medium drop-shadow">Kamera</span>
-                    </div>
-
-                    <div class="flex flex-col items-center cursor-pointer group" onclick="playTapSound()">
-                        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-red-500 text-2xl shadow-lg group-active:scale-95 transition">
-                            <i class="fa-solid fa-images"></i>
-                        </div>
-                        <span class="text-[11px] text-white mt-1.5 font-medium drop-shadow">Foto</span>
-                    </div>
-
-                    <div class="flex flex-col items-center cursor-pointer group" onclick="playTapSound()">
-                        <div class="w-14 h-14 bg-gradient-to-b from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg group-active:scale-95 transition">
-                            <i class="fa-solid fa-gear"></i>
-                        </div>
-                        <span class="text-[11px] text-white mt-1.5 font-medium drop-shadow">Pengaturan</span>
-                    </div>
-
-                    <div class="flex flex-col items-center cursor-pointer group" onclick="playTapSound()">
-                        <div class="w-14 h-14 bg-gradient-to-b from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg group-active:scale-95 transition">
-                            <i class="fa-solid fa-cloud-sun"></i>
-                        </div>
-                        <span class="text-[11px] text-white mt-1.5 font-medium drop-shadow">Cuaca</span>
-                    </div>
-
-                    <div class="flex flex-col items-center cursor-pointer group" onclick="lockPhone()">
-                        <div class="w-14 h-14 bg-gradient-to-b from-red-600 to-red-800 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg group-active:scale-95 transition">
-                            <i class="fa-solid fa-lock"></i>
-                        </div>
-                        <span class="text-[11px] text-white mt-1.5 font-medium drop-shadow">Kunci</span>
-                    </div>
-                </div>
-
-                <!-- Dock Bawah iOS -->
-                <div class="bg-white/20 backdrop-blur-2xl rounded-3xl p-3 flex justify-around items-center mb-4">
-                    <div class="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center text-white text-xl shadow cursor-pointer active:scale-90 transition" onclick="playTapSound()">
-                        <i class="fa-solid fa-phone"></i>
-                    </div>
-                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-blue-500 text-xl shadow cursor-pointer active:scale-90 transition" onclick="playTapSound()">
-                        <i class="fa-solid fa-compass"></i>
-                    </div>
-                    <div class="w-12 h-12 bg-sky-400 rounded-2xl flex items-center justify-center text-white text-xl shadow cursor-pointer active:scale-90 transition" onclick="playTapSound()">
-                        <i class="fa-solid fa-paper-plane"></i>
-                    </div>
-                    <div class="w-12 h-12 bg-red-500 rounded-2xl flex items-center justify-center text-white text-xl shadow cursor-pointer active:scale-90 transition" onclick="playTapSound()">
-                        <i class="fa-solid fa-music"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- LOCK SCREEN LAYER -->
-            <div id="lock-screen" class="absolute inset-0 lockscreen-bg z-20 flex flex-col justify-between pt-16 pb-6 px-6 transition-all duration-300">
-                <!-- Clock & Date Header -->
-                <div class="flex flex-col items-center text-white mt-4">
-                    <div class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-white/80">
-                        <i class="fa-solid fa-lock text-[10px]"></i>
-                        <span>Rabu, 28 Oktober</span>
-                    </div>
-                    <!-- Jam Presets 14.12 -->
-                    <h1 class="text-[86px] font-bold tracking-tight leading-none mt-1 drop-shadow-md text-white/95">14.12</h1>
-                </div>
-
-                <!-- Footer Lock Screen (Flashlight & Camera Quick Actions) -->
-                <div class="flex justify-between items-center w-full px-2 mb-8">
-                    <button onclick="toggleFlashlight(this)" class="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/60 active:scale-90 transition border border-white/10">
-                        <i class="fa-solid fa-lightbulb text-lg"></i>
-                    </button>
-                    <button onclick="playTapSound()" class="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/60 active:scale-90 transition border border-white/10">
-                        <i class="fa-solid fa-camera text-lg"></i>
-                    </button>
-                </div>
-
-                <!-- Swipe Up Prompt -->
-                <div class="absolute bottom-3 left-0 w-full flex flex-col items-center text-white/70 text-xs gap-1 animate-bounce cursor-pointer" onclick="showPasscodeScreen()">
-                    <span class="font-medium tracking-wide">Usap ke atas untuk membuka</span>
-                    <i class="fa-solid fa-chevron-up text-xs"></i>
-                </div>
-            </div>
-
-            <!-- PASSCODE LAYER (Tampil Saat Swipe Up) -->
-            <div id="passcode-screen" class="absolute inset-0 z-30 transform translate-y-full transition-transform duration-300 ease-out flex flex-col justify-between pt-20 pb-10 px-8 text-white blur-lockscreen">
-                
-                <!-- Status & Dots -->
-                <div id="passcode-header" class="flex flex-col items-center">
-                    <p id="passcode-title" class="text-base font-semibold tracking-wide mb-6">Masukkan Passcode</p>
-                    
-                    <!-- Indicator 4 Bulatan Passcode -->
-                    <div id="dots-container" class="flex gap-4 mb-2">
-                        <div class="w-3.5 h-3.5 rounded-full border-2 border-white transition-all duration-200"></div>
-                        <div class="w-3.5 h-3.5 rounded-full border-2 border-white transition-all duration-200"></div>
-                        <div class="w-3.5 h-3.5 rounded-full border-2 border-white transition-all duration-200"></div>
-                        <div class="w-3.5 h-3.5 rounded-full border-2 border-white transition-all duration-200"></div>
-                    </div>
-
-                    <!-- Peringatan Pesan Error Passcode -->
-                    <p id="error-message" class="text-red-400 text-xs font-medium text-center mt-3 h-5 opacity-0 transition-opacity duration-200">
-                        Passcode salah, cek kembali akun author
-                    </p>
-                </div>
-
-                <!-- Keypad 4 Angka (0-9) -->
-                <div class="grid grid-cols-3 gap-y-4 gap-x-6 justify-items-center my-auto">
-                    <button onclick="pressKey('1')" class="keypad-btn">
-                        <span class="text-3xl font-light">1</span>
-                    </button>
-                    <button onclick="pressKey('2')" class="keypad-btn">
-                        <span class="text-3xl font-light">2</span>
-                        <span class="text-[9px] font-bold tracking-widest text-white/70 -mt-1">ABC</span>
-                    </button>
-                    <button onclick="pressKey('3')" class="keypad-btn">
-                        <span class="text-3xl font-light">3</span>
-                        <span class="text-[9px] font-bold tracking-widest text-white/70 -mt-1">DEF</span>
-                    </button>
-                    <button onclick="pressKey('4')" class="keypad-btn">
-                        <span class="text-3xl font-light">4</span>
-                        <span class="text-[9px] font-bold tracking-widest text-white/70 -mt-1">GHI</span>
-                    </button>
-                    <button onclick="pressKey('5')" class="keypad-btn">
-                        <span class="text-3xl font-light">5</span>
-                        <span class="text-[9px] font-bold tracking-widest text-white/70 -mt-1">JKL</span>
-                    </button>
-                    <button onclick="pressKey('6')" class="keypad-btn">
-                        <span class="text-3xl font-light">6</span>
-                        <span class="text-[9px] font-bold tracking-widest text-white/70 -mt-1">MNO</span>
-                    </button>
-                    <button onclick="pressKey('7')" class="keypad-btn">
-                        <span class="text-3xl font-light">7</span>
-                        <span class="text-[9px] font-bold tracking-widest text-white/70 -mt-1">PQRS</span>
-                    </button>
-                    <button onclick="pressKey('8')" class="keypad-btn">
-                        <span class="text-3xl font-light">8</span>
-                        <span class="text-[9px] font-bold tracking-widest text-white/70 -mt-1">TUV</span>
-                    </button>
-                    <button onclick="pressKey('9')" class="keypad-btn">
-                        <span class="text-3xl font-light">9</span>
-                        <span class="text-[9px] font-bold tracking-widest text-white/70 -mt-1">WXYZ</span>
-                    </button>
-                    <div></div>
-                    <button onclick="pressKey('0')" class="keypad-btn">
-                        <span class="text-3xl font-light">0</span>
-                    </button>
-                    <button onclick="deleteKey()" class="w-[75px] h-[75px]
+        /* Base Screen Layer */
+        .screen {
+            position: absolute
