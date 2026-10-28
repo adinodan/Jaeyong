@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>iPhone 15 Simulator</title>
+    <title>iPhone 15</title>
     <style>
         :root {
             --sf-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
@@ -18,9 +18,10 @@
             font-family: var(--sf-font);
         }
 
-        body, html {
+        html, body {
             width: 100%;
             height: 100%;
+            height: 100dvh;
             overflow: hidden;
             background-color: #000;
             display: flex;
@@ -28,27 +29,46 @@
             align-items: center;
         }
 
-        /* Container Simulator iPhone 15 */
+        /* Frame Utama Simulator iPhone 15 */
         .iphone-frame {
             position: relative;
             width: 100%;
             height: 100%;
+            height: 100dvh;
             max-width: 430px;
-            max-height: 932px;
-            background-color: #000;
+            background-color: #1a1a1a;
+            /* Gradient cadangan jika gambar lambat dimuat */
+            background-image: linear-gradient(180deg, #1c2e4a 0%, #020208 100%);
+            background-size: cover;
+            background-position: center;
             overflow: hidden;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            touch-action: none;
         }
 
         @media (min-width: 500px) {
             .iphone-frame {
-                border-radius: 50px;
-                border: 12px solid #2d2d2d;
                 height: 92vh;
+                max-height: 932px;
+                border-radius: 50px;
+                border: 10px solid #2d2d2d;
+                box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
             }
         }
 
-        /* Status Bar */
+        /* Wallpaper Background Layer */
+        .wallpaper-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://i.ibb.co.com/KjnQVSrS/wallpaper.jpg'), linear-gradient(180deg, #2b3a4a 0%, #0a0c10 100%);
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+        }
+
+        /* Status Bar (Jam 14.12 & Ikon) */
         .status-bar {
             position: absolute;
             top: 0;
@@ -67,14 +87,14 @@
         }
 
         .status-left {
-            margin-top: 5px;
+            margin-top: 6px;
         }
 
         .status-right {
             display: flex;
             align-items: center;
             gap: 6px;
-            margin-top: 5px;
+            margin-top: 6px;
         }
 
         .status-right svg {
@@ -92,23 +112,446 @@
             background-color: #000000;
             border-radius: 20px;
             z-index: 101;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Layer Tampilan */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.4s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.4s ease;
+        }
+
+        /* Lockscreen */
+        #lockscreen {
+            z-index: 10;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: space-between;
-            padding: 0 12px;
+            align-items: center;
+            padding: 75px 20px 30px 20px;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+        }
+
+        .lock-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lock-date {
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            opacity: 0.9;
+        }
+
+        .lock-time {
+            font-size: 84px;
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -2px;
+        }
+
+        /* Passcode Screen */
+        #passcode-screen {
+            z-index: 20;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(35px);
+            -webkit-backdrop-filter: blur(35px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #passcode-screen.active {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .passcode-title {
             color: white;
-            font-size: 12px;
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            color: #ff453a;
+            font-size: 13px;
+            font-weight: 500;
+            min-height: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .dots-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 45px;
+        }
+
+        .dot {
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            transition: background-color 0.2s;
+        }
+
+        .dot.filled {
+            background-color: #ffffff;
+        }
+
+        /* Keypad iOS */
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px 28px;
+            justify-items: center;
+        }
+
+        .key-btn {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .key-btn:active {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .key-num {
+            font-size: 30px;
+            font-weight: 400;
+            line-height: 1;
+        }
+
+        .key-sub {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-top: 2px;
+        }
+
+        /* Homescreen */
+        #homescreen {
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 75px 20px 35px 20px;
+            opacity: 0;
+            transform: scale(1.1);
+            pointer-events: none;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+        #homescreen.unlocked {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px 14px;
+            justify-items: center;
+        }
+
+        .app-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            font-size: 26px;
+            color: white;
+        }
+
+        .app-name {
+            color: white;
+            font-size: 11px;
+            font-weight: 500;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+        }
+
+        .dock {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 32px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        /* Home Indicator (Bar Area untuk Swipe) */
+        .home-indicator-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            z-index: 150;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
         }
 
-        .dynamic-island.expanded {
-            width: 320px;
-            height: 80px;
-            border-radius: 40px;
-            padding: 15px 20px;
+        .home-indicator {
+            width: 135px;
+            height: 5px;
+            background-color: #ffffff;
+            border-radius: 3px;
         }
 
-        /* Base Screen Layer */
-        .screen {
-            position: absolute
+        .swipe-hint {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            opacity: 0.85;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-8px); }
+            60% { transform: translateY(-4px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="iphone-frame" id="iphone-frame">
+        <!-- Layer Wallpaper Custom -->
+        <div class="wallpaper-layer"></div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-left">14.12</div>
+            <div class="status-right">
+                <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="8" width="3" height="4" rx="0.5"/><rect x="4.5" y="6" width="3" height="6" rx="0.5"/><rect x="9" y="3" width="3" height="9" rx="0.5"/><rect x="13.5" y="0" width="3" height="12" rx="0.5"/></svg>
+                <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 12a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm-4.95-4.95a7 7 0 0 1 9.9 0l-1.41 1.41a5 5 0 0 0-7.08 0L3.05 7.05zm-2.83-2.83a11 11 0 0 1 15.56 0l-1.42 1.42a9 9 0 0 0-12.72 0L.22 4.22z"/></svg>
+                <svg width="24" height="12" viewBox="0 0 24 12"><rect x="0" y="0" width="21" height="12" rx="3" fill="none" stroke="#fff" stroke-width="1"/><rect x="2" y="2" width="13" height="8" rx="1.5"/><path d="M23 4v4" stroke="#fff" stroke-width="1" stroke-linecap="round"/></svg>
+            </div>
+        </div>
+
+        <!-- Dynamic Island -->
+        <div class="dynamic-island"></div>
+
+        <!-- Lockscreen -->
+        <div class="screen" id="lockscreen">
+            <div class="lock-header">
+                <div class="lock-date">RABU, 28 OKTOBER</div>
+                <div class="lock-time">14.12</div>
+            </div>
+            <div class="swipe-hint">Geser ke atas untuk membuka</div>
+        </div>
+
+        <!-- Passcode Screen -->
+        <div class="screen" id="passcode-screen">
+            <div class="passcode-title">Masukkan Passcode</div>
+            <div class="error-message" id="error-msg"></div>
+            
+            <div class="dots-container" id="dots-container">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+
+            <div class="keypad">
+                <div class="key-btn" onclick="pressKey('1')"><span class="key-num">1</span></div>
+                <div class="key-btn" onclick="pressKey('2')"><span class="key-num">2</span><span class="key-sub">ABC</span></div>
+                <div class="key-btn" onclick="pressKey('3')"><span class="key-num">3</span><span class="key-sub">DEF</span></div>
+                <div class="key-btn" onclick="pressKey('4')"><span class="key-num">4</span><span class="key-sub">GHI</span></div>
+                <div class="key-btn" onclick="pressKey('5')"><span class="key-num">5</span><span class="key-sub">JKL</span></div>
+                <div class="key-btn" onclick="pressKey('6')"><span class="key-num">6</span><span class="key-sub">MNO</span></div>
+                <div class="key-btn" onclick="pressKey('7')"><span class="key-num">7</span><span class="key-sub">PQRS</span></div>
+                <div class="key-btn" onclick="pressKey('8')"><span class="key-num">8</span><span class="key-sub">TUV</span></div>
+                <div class="key-btn" onclick="pressKey('9')"><span class="key-num">9</span><span class="key-sub">WXYZ</span></div>
+                <div class="key-btn" style="visibility: hidden;"></div>
+                <div class="key-btn" onclick="pressKey('0')"><span class="key-num">0</span></div>
+                <div class="key-btn" style="background:transparent; backdrop-filter:none;" onclick="deleteKey()"><span style="font-size:14px;">Hapus</span></div>
+            </div>
+        </div>
+
+        <!-- Homescreen -->
+        <div class="screen" id="homescreen">
+            <div class="app-grid">
+                <div class="app-item"><div class="app-icon" style="background: linear-gradient(#34c759, #28a745);">📞</div><span class="app-name">Telepon</span></div>
+                <div class="app-item"><div class="app-icon" style="background: linear-gradient(#007aff, #0056b3);">💬</div><span class="app-name">Pesan</span></div>
+                <div class="app-item"><div class="app-icon" style="background: linear-gradient(#5856d6, #3b3b98);">📷</div><span class="app-name">Kamera</span></div>
+                <div class="app-item"><div class="app-icon" style="background: linear-gradient(#ff9500, #cc7a00);">🖼️</div><span class="app-name">Foto</span></div>
+                <div class="app-item"><div class="app-icon" style="background: linear-gradient(#ff2d55, #c11c3d);">🎵</div><span class="app-name">Musik</span></div>
+                <div class="app-item"><div class="app-icon" style="background: linear-gradient(#5ac8fa, #17a2b8);">⚙️</div><span class="app-name">Pengaturan</span></div>
+            </div>
+
+            <div class="dock">
+                <div class="app-icon" style="background: linear-gradient(#34c759, #28a745); width:52px; height:52px;">📞</div>
+                <div class="app-icon" style="background: linear-gradient(#007aff, #0056b3); width:52px; height:52px;">💬</div>
+                <div class="app-icon" style="background: linear-gradient(#ff9500, #cc7a00); width:52px; height:52px;">🌐</div>
+                <div class="app-icon" style="background: linear-gradient(#ff2d55, #c11c3d); width:52px; height:52px;">🎵</div>
+            </div>
+        </div>
+
+        <!-- Home Indicator / Area Swipe -->
+        <div class="home-indicator-container" id="swipe-area">
+            <div class="home-indicator"></div>
+        </div>
+    </div>
+
+    <script>
+        const CORRECT_PASSCODE = "1007";
+        let currentInput = "";
+        let audioCtx = null;
+        let isLockscreen = true;
+
+        // Sound Effect saat Tombol Ditekan
+        function playClickSound() {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.04);
+
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.04);
+            } catch (e) {}
+        }
+
+        // Deteksi Usap Layar ke Atas (Swipe Up)
+        let startY = 0;
+        const frame = document.getElementById('iphone-frame');
+
+        frame.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+        }, { passive: true });
+
+        frame.addEventListener('touchend', (e) => {
+            const endY = e.changedTouches[0].clientY;
+            if (startY - endY > 40 && isLockscreen) {
+                showPasscodeScreen();
+            }
+        }, { passive: true });
+
+        document.getElementById('swipe-area').addEventListener('click', () => {
+            if (isLockscreen) showPasscodeScreen();
+        });
+
+        function showPasscodeScreen() {
+            document.getElementById('passcode-screen').classList.add('active');
+        }
+
+        // Logika Input Keypad
+        function pressKey(num) {
+            playClickSound();
+            if (currentInput.length < 4) {
+                currentInput += num;
+                updateDots();
+                
+                if (currentInput.length === 4) {
+                    setTimeout(checkPasscode, 150);
+                }
+            }
+        }
+
+        function deleteKey() {
+            playClickSound();
+            if (currentInput.length > 0) {
+                currentInput = currentInput.slice(0, -1);
+                updateDots();
+                document.getElementById('error-msg').innerText = "";
+            }
+        }
+
+        function updateDots() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                if (index < currentInput.length) {
+                    dot.classList.add('filled');
+                } else {
+                    dot.classList.remove('filled');
+                }
+            });
+        }
+
+        function checkPasscode() {
+            const errorMsg = document.getElementById('error-msg');
+            const dotsContainer = document.getElementById('dots-container');
+
+            if (currentInput === CORRECT_PASSCODE) {
+                isLockscreen = false;
+                document.getElementById('passcode-screen').classList.remove('active');
+                document.getElementById('lockscreen').style.opacity = '0';
+                document.getElementById('homescreen').classList.add('unlocked');
+                errorMsg.innerText = "";
+            } else {
+                errorMsg.innerText = "Passcode salah, cek kembali akun author";
+                dotsContainer.classList.add('shake');
+                
+                setTimeout(() => {
+                    dotsContainer.classList.remove('shake');
+                    currentInput = "";
+                    updateDots();
+                }, 400);
+            }
+        }
+    </script>
+</body>
+</html>
