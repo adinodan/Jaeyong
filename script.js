@@ -2,6 +2,7 @@ const CORRECT_PASSCODE = "1007";
 let currentInput = "", audioCtx = null, isLockscreen = true, startY = 0;
 const lockscreen = document.getElementById('lockscreen'), passcodeScreen = document.getElementById('passcode-screen');
 
+// Fungsi Universal untuk Efek Suara (Tap / Klik / Ketik)
 function playClickSound() {
     try {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -17,18 +18,29 @@ function playClickSound() {
     } catch (e) {}
 }
 
+// Tambahkan efek suara saat layar/tombol umum di-tap
+document.addEventListener('click', (e) => {
+    // Membunyikan suara jika mengklik ikon aplikasi, tombol, atau elemen interaktif
+    if (e.target.closest('.app-item') || e.target.closest('.action-btn') || e.target.closest('.safari-search-widget') || e.target.closest('.spotify-btn')) {
+        playClickSound();
+    }
+});
+
 lockscreen.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, {passive: true});
-lockscreen.addEventListener('touchend', e => { if (isLockscreen && startY - e.changedTouches[0].clientY > 30) showPasscodeScreen(); }, {passive: true});
+lockscreen.addEventListener('touchend', e => { if (isLockscreen && startY - e.changedTouches[0].clientY > 30) { playClickSound(); showPasscodeScreen(); } }, {passive: true});
 lockscreen.addEventListener('mousedown', e => { startY = e.clientY; });
-lockscreen.addEventListener('mouseup', e => { if (isLockscreen && startY - e.clientY > 30) showPasscodeScreen(); });
+lockscreen.addEventListener('mouseup', e => { if (isLockscreen && startY - e.clientY > 30) { playClickSound(); showPasscodeScreen(); } });
 
-lockscreen.addEventListener('click', e => { if (isLockscreen && !e.target.closest('.action-btn')) showPasscodeScreen(); });
-document.getElementById('swipe-area').addEventListener('click', () => { if (isLockscreen) showPasscodeScreen(); });
+lockscreen.addEventListener('click', e => { if (isLockscreen && !e.target.closest('.action-btn')) { playClickSound(); showPasscodeScreen(); } });
+document.getElementById('swipe-area').addEventListener('click', () => { if (isLockscreen) { playClickSound(); showPasscodeScreen(); } });
 
-function showPasscodeScreen() { passcodeScreen.classList.add('active'); }
+function showPasscodeScreen() { 
+    playClickSound();
+    passcodeScreen.classList.add('active'); 
+}
 
 function pressKey(num) {
-    playClickSound();
+    playClickSound(); // Suara saat mengetik angka passcode
     if (currentInput.length < 4) {
         currentInput += num;
         updateDots();
@@ -37,7 +49,7 @@ function pressKey(num) {
 }
 
 function deleteKey() {
-    playClickSound();
+    playClickSound(); // Suara saat tombol Hapus ditekan
     if (currentInput.length > 0) {
         currentInput = currentInput.slice(0, -1);
         updateDots();
@@ -54,6 +66,7 @@ function updateDots() {
 function checkPasscode() {
     const errorMsg = document.getElementById('error-msg'), dotsContainer = document.getElementById('dots-container');
     if (currentInput === CORRECT_PASSCODE) {
+        playClickSound();
         isLockscreen = false;
         passcodeScreen.classList.remove('active');
         lockscreen.style.opacity = '0';
@@ -62,13 +75,18 @@ function checkPasscode() {
         errorMsg.innerText = "";
         triggerImessNotification();
     } else {
+        playClickSound();
         errorMsg.innerText = "Passcode salah, cek kembali akun author";
         dotsContainer.classList.add('shake');
         setTimeout(() => { dotsContainer.classList.remove('shake'); currentInput = ""; updateDots(); }, 400);
     }
 }
 
-function toggleFlashlight(e) { e.stopPropagation(); document.getElementById('flashlight-btn').classList.toggle('active'); }
+function toggleFlashlight(e) { 
+    e.stopPropagation(); 
+    playClickSound();
+    document.getElementById('flashlight-btn').classList.toggle('active'); 
+}
 
 function handleScroll() {
     const slider = document.getElementById('slider');
@@ -88,6 +106,7 @@ setInterval(() => {
 
 function triggerImessNotification() {
     setTimeout(() => {
+        playClickSound(); // Suara notifikasi masuk
         const banner = document.getElementById('imessage-banner');
         banner.classList.add('show');
         setTimeout(() => { banner.classList.remove('show'); }, 5000);
@@ -95,17 +114,20 @@ function triggerImessNotification() {
 }
 
 function openImessModal() {
+    playClickSound();
     document.getElementById('imessage-banner').classList.remove('show');
     document.getElementById('imess-modal').classList.add('active');
 }
 
 function closeImessModal() {
+    playClickSound();
     document.getElementById('imess-modal').classList.remove('active');
 }
 
 function sendChatMessage() {
     const input = document.getElementById('chat-input');
     if (input.value.trim() !== "") {
+        playClickSound(); // Suara saat mengirim pesan
         const chatBody = document.getElementById('imess-chat-body');
         const bubble = document.createElement('div');
         bubble.className = 'chat-bubble sent';
