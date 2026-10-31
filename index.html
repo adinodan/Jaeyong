@@ -2,14 +2,24 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>UntilIMakeUMine-Adin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --ios-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            --ios-blue: #007AFF;
-            --ios-green: #34C759;
+            --ios-font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Text", "Helvetica Neue", sans-serif;
             --ios-bg: #000000;
+            --ios-text: #ffffff;
+            --ios-subtext: #ebebf599;
+            --ios-blue: #0A84FF;
+            --ios-green: #30D158;
+            --ios-red: #FF453A;
+            --ios-gray: #1c1c1e;
+            --ios-gray-light: #2c2c2e;
+            --ios-glass: rgba(255, 255, 255, 0.15);
+            --ios-glass-dark: rgba(30, 30, 30, 0.75);
         }
 
         * {
@@ -19,229 +29,344 @@
             font-family: var(--ios-font);
             -webkit-tap-highlight-color: transparent;
             user-select: none;
+            -webkit-user-select: none;
         }
 
-        body {
-            background-color: #111;
+        html, body {
+            width: 100vw;
+            height: 100dvh;
+            background-color: #0b0b0b;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
         }
 
-        /* iOS Simulator Shell */
-        .ios-container {
+        #phone-container {
+            position: relative;
             width: 100vw;
-            height: 100vh;
+            height: 100dvh;
             max-width: 430px;
             max-height: 932px;
-            background: #000;
-            position: relative;
+            background-color: #000;
             overflow: hidden;
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
         }
 
         @media (min-width: 431px) {
-            .ios-container {
+            #phone-container {
                 border-radius: 50px;
-                border: 12px solid #2e2e2e;
-                height: 88vh;
+                border: 12px solid #2c2c2e;
+                height: 92dvh;
             }
         }
 
-        /* Dynamic Island */
+        /* Status Bar & Dynamic Island */
+        .status-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            z-index: 1000;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            pointer-events: none;
+        }
+
         .dynamic-island {
             position: absolute;
-            top: 11px;
+            top: 12px;
             left: 50%;
             transform: translateX(-50%);
             width: 120px;
-            height: 32px;
-            background: #000;
+            height: 35px;
+            background-color: #000;
             border-radius: 20px;
-            z-index: 9999;
+            z-index: 1001;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 10px;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto;
+            cursor: pointer;
         }
         .dynamic-island.expanded {
-            width: 340px;
-            height: 60px;
-            border-radius: 30px;
-            background: rgba(20,20,20,0.95);
-            backdrop-filter: blur(20px);
+            width: 320px;
+            height: 50px;
+            border-radius: 25px;
+            background-color: #111;
+        }
+        .di-cam {
+            width: 12px;
+            height: 12px;
+            background-color: #0d0d0d;
+            border-radius: 50%;
+            border: 1px solid #222;
+        }
+        .di-content {
+            font-size: 12px;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .dynamic-island.expanded .di-content {
+            opacity: 1;
         }
 
-        /* Screens */
+        /* Screen Manager */
         .screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            display: none;
-            flex-direction: column;
-            overflow: hidden;
-            background-size: cover;
-            background-position: center;
-        }
-        .screen.active {
             display: flex;
+            flex-direction: column;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+            overflow: hidden;
+        }
+        .screen.hidden-screen {
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
         }
 
-        /* Lockscreen */
-        #lockscreen {
-            background-image: url('https://i.ibb.co/G35y8YHN/6bb64ebbf4b46463a682d83afd6cd03f.jpg');
+        /* Mute Control Floating Button */
+        .mute-float {
+            position: absolute;
+            top: 55px;
+            right: 20px;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.2);
             color: #fff;
-            padding: 50px 20px 30px 20px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            z-index: 999;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+
+        /* --- LOCKSCREEN --- */
+        #lockscreen {
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            padding: 60px 24px 40px 24px;
             justify-content: space-between;
             align-items: center;
         }
-        .lock-time {
-            font-size: 72px;
-            font-weight: 300;
-            letter-spacing: -1px;
-            margin-top: 20px;
+        .lock-clock-container {
+            text-align: center;
+            margin-top: 40px;
         }
         .lock-date {
-            font-size: 20px;
+            font-size: 17px;
             font-weight: 500;
-            opacity: 0.9;
+            color: rgba(255,255,255,0.85);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .lock-time {
+            font-size: 82px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            line-height: 1;
+            margin-top: 5px;
         }
         .lock-bottom {
             width: 100%;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            padding: 0 20px;
+            gap: 30px;
         }
-        .lock-icon-btn {
+        .lock-actions {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+        .lock-btn-circle {
             width: 50px;
             height: 50px;
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
             border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(20px);
             display: flex;
             justify-content: center;
             align-items: center;
             color: #fff;
-            font-size: 20px;
+            border: none;
         }
         .swipe-up-hint {
-            text-align: center;
             font-size: 14px;
-            opacity: 0.7;
-            margin-bottom: 10px;
-            animation: bounce 2s infinite;
+            font-weight: 500;
+            color: rgba(255,255,255,0.7);
+            letter-spacing: 0.5px;
+            animation: bounceUp 2s infinite;
         }
-        @keyframes bounce {
+        @keyframes bounceUp {
             0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-8px);}
-            60% {transform: translateY(-4px);}
+            40% {transform: translateY(-6px);}
+            60% {transform: translateY(-3px);}
         }
 
         /* Passcode Overlay */
-        #passcode-screen {
+        .passcode-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(20,20,20,0.6);
+            background: rgba(20, 20, 20, 0.75);
             backdrop-filter: blur(40px);
-            z-index: 100;
-            display: none;
+            -webkit-backdrop-filter: blur(40px);
+            z-index: 2000;
+            display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .passcode-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .passcode-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 30px;
             color: #fff;
         }
-        #passcode-screen.active { display: flex; }
         .passcode-dots {
             display: flex;
-            gap: 16px;
-            margin: 30px 0;
+            gap: 20px;
+            margin-bottom: 40px;
         }
-        .passcode-dot {
-            width: 16px;
-            height: 16px;
-            border: 2px solid #fff;
+        .pass-dot {
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
-            transition: 0.2s;
+            border: 2px solid #fff;
+            background: transparent;
+            transition: all 0.2s;
         }
-        .passcode-dot.filled {
+        .pass-dot.filled {
             background: #fff;
         }
-        .keypad {
+        .passcode-error {
+            color: var(--ios-red);
+            font-size: 13px;
+            font-weight: 500;
+            height: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .passcode-keypad {
             display: grid;
             grid-template-columns: repeat(3, 75px);
-            gap: 20px;
-            margin-top: 10px;
+            gap: 16px;
         }
-        .key-btn {
+        .pass-key {
             width: 75px;
             height: 75px;
-            background: rgba(255,255,255,0.1);
             border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            font-size: 28px;
+            font-weight: 500;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: 28px;
-            font-weight: 400;
             cursor: pointer;
             transition: background 0.2s;
         }
-        .key-btn:active { background: rgba(255,255,255,0.3); }
-        .key-sub {
+        .pass-key:active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .pass-key span.sub {
             font-size: 10px;
             letter-spacing: 2px;
-            opacity: 0.7;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: rgba(255,255,255,0.6);
+            margin-top: 2px;
         }
-        .passcode-error {
-            color: #FF453A;
-            font-size: 14px;
-            margin-top: 15px;
-            height: 20px;
-            text-align: center;
+        .pass-cancel {
+            position: absolute;
+            bottom: 40px;
+            font-size: 16px;
+            color: #fff;
+            background: none;
+            border: none;
+            cursor: pointer;
         }
 
-        /* Homescreen */
+        /* --- HOMESCREEN --- */
         #homescreen {
-            background-image: url('https://i.ibb.co/M5WzWbhk/040571acff86430653fb4256f45bd105.jpg');
-            padding: 50px 20px 40px 20px;
+            background-size: cover;
+            background-position: center;
+            padding: 50px 16px 20px 16px;
             justify-content: space-between;
+            display: flex;
+            flex-direction: column;
         }
-        .home-slides-container {
-            width: 100%;
-            height: calc(100% - 80px);
+        .home-slider-container {
+            flex: 1;
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
             position: relative;
-            overflow: hidden;
+            margin-top: 15px;
         }
-        .home-slide {
-            position: absolute;
-            inset: 0;
+        .home-slider-container::-webkit-scrollbar {
+            display: none;
+        }
+        .home-page {
+            min-width: 100%;
+            height: 100%;
+            scroll-snap-align: start;
             display: flex;
             flex-direction: column;
             gap: 20px;
-            transition: transform 0.3s ease-in-out;
+            padding: 0 4px;
         }
-        .home-slide.page-2 {
-            transform: translateX(100%);
-        }
+
+        /* Widgets Slide 1 */
         .widget-box {
-            background: rgba(255,255,255,0.2);
+            background: rgba(30, 30, 30, 0.65);
             backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border-radius: 24px;
-            padding: 16px;
+            padding: 18px;
             color: #fff;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        /* Spotify Widget */
         .spotify-widget {
             display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .spotify-top {
+            display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 14px;
         }
         .spotify-art {
             width: 60px;
@@ -250,22 +375,84 @@
             background: #333;
             background-size: cover;
             background-position: center;
-            background-image: url('https://i.ibb.co/93pHXYwV/IMG-20261028-WA0027.jpg');
         }
-        /* Photo Slideshow Widget */
+        .spotify-meta {
+            flex: 1;
+        }
+        .spotify-title {
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .spotify-artist {
+            font-size: 13px;
+            color: var(--ios-subtext);
+        }
+        .spotify-playlist {
+            font-size: 11px;
+            color: #1DB954;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+        .spotify-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0,0,0,0.2);
+            padding: 8px 14px;
+            border-radius: 14px;
+        }
+        .audio-visualizer {
+            display: flex;
+            gap: 3px;
+            align-items: flex-end;
+            height: 16px;
+        }
+        .bar {
+            width: 3px;
+            background: #1DB954;
+            border-radius: 2px;
+            animation: soundWave 1.2s infinite ease-in-out;
+            height: 4px;
+        }
+        .bar:nth-child(2) { animation-delay: 0.2s; }
+        .bar:nth-child(3) { animation-delay: 0.4s; }
+        .bar:nth-child(4) { animation-delay: 0.1s; }
+        @keyframes soundWave {
+            0%, 100% { height: 4px; }
+            50% { height: 16px; }
+        }
+        .spotify-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+        }
+
         .photo-widget {
             height: 240px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+            padding: 0 !important;
+        }
+        .photo-slide {
+            position: absolute;
+            inset: 0;
             background-size: cover;
             background-position: center;
-            border-radius: 24px;
-            transition: background-image 0.5s ease-in-out;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
         }
-        /* App Grid */
+        .photo-slide.active {
+            opacity: 1;
+        }
+
+        /* App Grid Slide 2 */
         .app-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 20px 12px;
-            padding-top: 10px;
+            padding: 10px 4px;
         }
         .app-item {
             display: flex;
@@ -275,499 +462,697 @@
             cursor: pointer;
         }
         .app-icon {
-            width: 62px;
-            height: 62px;
-            border-radius: 14px;
+            width: 64px;
+            height: 64px;
+            border-radius: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
             font-size: 28px;
             color: #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            background-size: cover;
-            background-position: center;
         }
         .app-name {
             font-size: 12px;
+            font-weight: 500;
             color: #fff;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
             text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 70px;
         }
-        .home-pagination {
+
+        /* Dock */
+        .home-dock {
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 32px;
+            padding: 10px 14px;
             display: flex;
-            justify-content: center;
-            gap: 8px;
+            justify-content: space-around;
+            align-items: center;
             margin-bottom: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
         }
-        .dot-page {
-            width: 8px;
-            height: 8px;
-            background: rgba(255,255,255,0.4);
-            border-radius: 50%;
-            transition: 0.3s;
+        .home-dock .app-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 14px;
         }
-        .dot-page.active {
+
+        /* Home Indicator */
+        .home-indicator {
+            width: 134px;
+            height: 5px;
             background: #fff;
-            width: 20px;
-            border-radius: 4px;
+            border-radius: 100px;
+            align-self: center;
+            margin-bottom: 6px;
+            cursor: pointer;
         }
 
         /* Notification Banner */
-        .notif-banner {
+        .notification-banner {
             position: absolute;
             top: -100px;
-            left: 15px;
-            right: 15px;
+            left: 12px;
+            right: 12px;
             background: rgba(40, 40, 40, 0.85);
             backdrop-filter: blur(30px);
-            border-radius: 24px;
-            padding: 14px 18px;
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 22px;
+            padding: 14px 16px;
             color: #fff;
-            z-index: 9998;
+            z-index: 3000;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            cursor: pointer;
-            transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
-            gap: 14px;
             align-items: center;
+            gap: 12px;
+            transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
         }
-        .notif-banner.show {
-            top: 50px;
+        .notification-banner.show {
+            top: 52px;
         }
         .notif-app-icon {
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             border-radius: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 20px;
+            font-size: 18px;
             flex-shrink: 0;
         }
         .notif-content {
-            flex-grow: 1;
-            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
-        .notif-header {
+        .notif-header-row {
             display: flex;
             justify-content: space-between;
-            font-size: 13px;
-            opacity: 0.8;
-            margin-bottom: 2px;
+            align-items: center;
         }
-        .notif-title {
+        .notif-app-name {
+            font-size: 11px;
             font-weight: 600;
-            font-size: 14px;
+            color: var(--ios-subtext);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .notif-text {
+        .notif-time {
+            font-size: 11px;
+            color: var(--ios-subtext);
+        }
+        .notif-body {
             font-size: 13px;
-            opacity: 0.9;
-            white-space: nowrap;
+            font-weight: 500;
+            color: #fff;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
-            text-overflow: ellipsis;
         }
 
-        /* App Windows / Generic Sub-screens */
-        .app-screen {
+        /* --- APP WINDOWS --- */
+        .app-window {
             position: absolute;
             inset: 0;
-            background: #fff;
-            display: none;
+            background: #000;
+            z-index: 1500;
+            display: flex;
             flex-direction: column;
-            z-index: 50;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .app-screen.active { display: flex; }
-
-        /* iMessage App */
-        .imessage-header {
-            padding: 15px 20px 10px 20px;
-            background: rgba(245,245,247,0.9);
+        .app-window.active {
+            transform: translateY(0);
+        }
+        .app-header {
+            height: 90px;
+            padding: 45px 16px 10px 16px;
+            background: rgba(20,20,20,0.85);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid #d1d1d6;
             display: flex;
             align-items: center;
-            gap: 15px;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            flex-shrink: 0;
         }
-        .back-btn {
-            font-size: 16px;
+        .app-header-title {
+            font-size: 17px;
+            font-weight: 700;
+        }
+        .app-back-btn {
+            background: none;
+            border: none;
             color: var(--ios-blue);
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+        .app-body {
+            flex: 1;
+            overflow-y: auto;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* iMessage UI */
+        .imessage-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .imessage-tabs {
+            display: flex;
+            padding: 10px 16px;
+            gap: 15px;
+            border-bottom: 1px solid #222;
+        }
+        .imess-tab {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--ios-subtext);
             cursor: pointer;
             background: none;
             border: none;
-            font-weight: 500;
         }
-        .chat-contact-info {
+        .imess-tab.active {
+            color: #fff;
+        }
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .chat-list-item {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            flex-grow: 1;
-            margin-right: 30px;
+            padding: 12px 16px;
+            gap: 14px;
+            border-bottom: 1px solid #161616;
+            cursor: pointer;
+        }
+        .chat-list-item:active {
+            background: #1c1c1e;
         }
         .chat-avatar {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
+            background: #333;
             background-size: cover;
             background-position: center;
-            margin-bottom: 4px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-weight: 700;
         }
-        .chat-name {
-            font-size: 14px;
+        .chat-list-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .chat-list-name {
+            font-size: 16px;
             font-weight: 600;
-            color: #000;
+            color: #fff;
         }
-        .chat-body {
-            flex-grow: 1;
-            background: #fff;
-            padding: 15px;
+        .chat-list-preview {
+            font-size: 13px;
+            color: var(--ios-subtext);
+        }
+
+        /* Room Chat View */
+        .room-chat {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        .room-chat.active {
+            display: flex;
+        }
+        .chat-messages {
+            flex: 1;
             overflow-y: auto;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
-        .chat-bubble {
+        .message-bubble {
             max-width: 75%;
             padding: 10px 14px;
             border-radius: 18px;
-            font-size: 15px;
+            font-size: 14px;
             line-height: 1.4;
             word-wrap: break-word;
             position: relative;
         }
-        .chat-bubble.received {
-            background: #e9e9eb;
-            color: #000;
+        .message-bubble.incoming {
+            background: #262628;
+            color: #fff;
             align-self: flex-start;
             border-bottom-left-radius: 4px;
         }
-        .chat-bubble.sent {
+        .message-bubble.outgoing {
             background: var(--ios-blue);
             color: #fff;
             align-self: flex-end;
             border-bottom-right-radius: 4px;
         }
+        .typing-indicator {
+            align-self: flex-start;
+            background: #262628;
+            padding: 10px 16px;
+            border-radius: 18px;
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            display: none;
+        }
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #888;
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+
         .chat-input-bar {
-            padding: 10px 15px;
-            background: #f8f8f8;
-            border-top: 1px solid #d1d1d6;
+            padding: 10px 16px;
+            background: #111;
             display: flex;
             align-items: center;
             gap: 10px;
+            border-top: 1px solid #222;
         }
         .chat-input {
-            flex-grow: 1;
-            background: #fff;
-            border: 1px solid #d1d1d6;
+            flex: 1;
+            background: #222;
+            border: 1px solid #333;
             border-radius: 20px;
-            padding: 8px 14px;
-            font-size: 15px;
+            padding: 10px 16px;
+            color: #fff;
+            font-size: 14px;
             outline: none;
         }
-
-        /* Grindr App */
-        .grindr-screen {
-            background: #121212;
+        .chat-send-btn {
+            background: var(--ios-blue);
             color: #fff;
-        }
-        .grindr-header {
-            padding: 15px;
-            background: #1c1c1e;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #2c2c2e;
-        }
-        .grindr-logo {
-            font-weight: 700;
-            color: #FF9500;
-            font-size: 20px;
-            letter-spacing: 1px;
-        }
-        .swipe-container {
-            flex-grow: 1;
-            position: relative;
-            padding: 20px;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
+            cursor: pointer;
         }
-        .swipe-card {
-            width: 100%;
+
+        /* Grindr App UI */
+        .grindr-container {
+            display: flex;
+            flex-direction: column;
             height: 100%;
-            max-height: 500px;
-            background: #2c2c2e;
-            border-radius: 20px;
-            overflow: hidden;
-            position: absolute;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: #111;
+            padding: 16px;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .grindr-card {
+            width: 100%;
+            max-width: 360px;
+            height: 480px;
+            border-radius: 24px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
-            background-size: cover;
-            background-position: center;
-            transition: transform 0.3s ease, opacity 0.3s ease;
+            padding: 24px;
+            color: #fff;
+            overflow: hidden;
         }
-        .swipe-card-info {
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            padding: 25px 20px;
+        .grindr-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+            z-index: 1;
         }
-        .swipe-actions {
-            padding: 20px;
+        .grindr-info {
+            position: relative;
+            z-index: 2;
+        }
+        .grindr-name {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .grindr-actions {
             display: flex;
-            justify-content: space-around;
+            gap: 30px;
+            margin-top: 24px;
         }
-        .swipe-btn {
-            width: 60px;
-            height: 60px;
+        .grindr-action-btn {
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
-            border: none;
+            background: #222;
+            border: 2px solid #333;
+            color: #fff;
             font-size: 24px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
         }
-        .btn-pass { background: #3a3a3c; color: #FF453A; }
-        .btn-like { background: #3a3a3c; color: #34C759; }
+        .grindr-action-btn.like {
+            color: #FF2D55;
+            border-color: rgba(255,45,85,0.4);
+        }
 
-        /* Naration App (Notes style) */
-        .naration-screen {
-            background: #fbfbfd;
-        }
-        .naration-header {
-            padding: 20px;
-            font-size: 28px;
-            font-weight: 700;
-        }
-        .notes-list {
-            padding: 0 20px;
-        }
-        .note-card {
-            background: #fff;
+        /* Naration Notes App UI */
+        .naration-container {
             padding: 16px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            cursor: pointer;
-            border: 1px solid #e5e5ea;
-        }
-        .note-pass-modal {
-            position: absolute;
-            inset: 0;
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(20px);
-            z-index: 100;
-            display: none;
+            display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            gap: 12px;
         }
-        .note-pass-modal.active { display: flex; }
+        .note-item {
+            background: #1c1c1e;
+            padding: 16px;
+            border-radius: 14px;
+            color: #fff;
+            cursor: pointer;
+        }
+        .note-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .note-preview {
+            font-size: 13px;
+            color: var(--ios-subtext);
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
 
-<div class="ios-container" id="iosContainer">
-    <!-- Dynamic Island -->
-    <div class="dynamic-island" id="dynamicIsland">
-        <div style="width: 12px; height: 12px; background: #222; border-radius: 50%;"></div>
-        <div style="width: 10px; height: 10px; background: #0a0a0a; border-radius: 50%;"></div>
+<div id="phone-container">
+    <!-- Mute audio button -->
+    <button class="mute-float" id="mute-toggle-btn" onclick="toggleMute()">Audio: ON</button>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <span id="status-time">09:55</span>
+        <div class="dynamic-island" id="dynamic-island" onclick="toggleDynamicIsland()">
+            <div class="di-cam"></div>
+            <div class="di-content" id="di-text">UntilIMakeUMine</div>
+        </div>
+        <div style="display: flex; gap: 6px; align-items: center;">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="#fff"><path d="M1 9h2V3H1v6zm4 3h2V0H5v12zm4-4h2V4H9v4zm4 3h2V1h-2v10z"/></svg>
+            <svg width="22" height="12" viewBox="0 0 24 12" fill="#fff"><rect x="1" y="1" width="18" height="10" rx="3" stroke="#fff" stroke-width="2" fill="none"/><rect x="3" y="3" width="14" height="6" rx="1.5" fill="#fff"/><path d="M21 4v4" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
     </div>
 
     <!-- Notification Banner -->
-    <div class="notif-banner" id="notifBanner" onclick="handleNotificationClick()">
-        <div class="notif-app-icon" id="notifIcon">💬</div>
+    <div class="notification-banner" id="notification-banner" onclick="handleNotificationClick()">
+        <div class="notif-app-icon" id="notif-icon" style="background:#0A84FF;">💬</div>
         <div class="notif-content">
-            <div class="notif-header">
-                <span class="notif-title" id="notifTitle">Mark 💌</span>
-                <span>Now</span>
+            <div class="notif-header-row">
+                <span class="notif-app-name" id="notif-app-title">Messages</span>
+                <span class="notif-time">Now</span>
             </div>
-            <div class="notif-text" id="notifText">kamu jadi ke taman ga mbul</div>
+            <div class="notif-body" id="notif-text">Notifikasi baru diterima</div>
         </div>
     </div>
 
     <!-- 1. LOCKSCREEN -->
-    <div class="screen active" id="lockscreen">
-        <div></div>
-        <div style="text-align: center;">
-            <div class="lock-date" id="lockDate">Kamis, 29 Oktober</div>
-            <div class="lock-time" id="lockTime">19:23</div>
+    <div class="screen" id="lockscreen" style="background-image: url('https://i.ibb.co.com/G35y8YHN/6bb64ebbf4b46463a682d83afd6cd03f.jpg');">
+        <div class="lock-clock-container">
+            <div class="lock-date" id="lock-date-text">Jumat, 30 Oktober</div>
+            <div class="lock-time" id="lock-time-text">09:55</div>
         </div>
-        <div style="width: 100%;">
-            <div class="swipe-up-hint">Geser ke atas untuk membuka</div>
-            <div class="lock-bottom">
-                <div class="lock-icon-btn">🔦</div>
-                <div class="lock-icon-btn">📷</div>
+        <div class="lock-bottom">
+            <div class="lock-actions">
+                <button class="lock-btn-circle">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                </button>
+                <button class="lock-btn-circle">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+                </button>
             </div>
+            <div class="swipe-up-hint" id="swipe-unlock-trigger">Geser ke atas untuk membuka</div>
+            <div class="home-indicator" onclick="openPasscodePrompt()"></div>
         </div>
     </div>
 
-    <!-- Passcode Screen -->
-    <div id="passcode-screen">
-        <div style="font-size: 18px; font-weight: 500;">Masukkan Passcode</div>
+    <!-- Passcode Modal Overlay -->
+    <div class="passcode-overlay" id="passcode-overlay">
+        <div class="passcode-title">Masukkan Passcode</div>
         <div class="passcode-dots">
-            <div class="passcode-dot" id="dot0"></div>
-            <div class="passcode-dot" id="dot1"></div>
-            <div class="passcode-dot" id="dot2"></div>
-            <div class="passcode-dot" id="dot3"></div>
+            <div class="pass-dot" id="pdot-0"></div>
+            <div class="pass-dot" id="pdot-1"></div>
+            <div class="pass-dot" id="pdot-2"></div>
+            <div class="pass-dot" id="pdot-3"></div>
         </div>
-        <div class="keypad">
-            <div class="key-btn" onclick="pressKey('1')">1</div>
-            <div class="key-btn" onclick="pressKey('2')">2<span class="key-sub">ABC</span></div>
-            <div class="key-btn" onclick="pressKey('3')">3<span class="key-sub">DEF</span></div>
-            <div class="key-btn" onclick="pressKey('4')">4<span class="key-sub">GHI</span></div>
-            <div class="key-btn" onclick="pressKey('5')">5<span class="key-sub">JKL</span></div>
-            <div class="key-btn" onclick="pressKey('6')">6<span class="key-sub">MNO</span></div>
-            <div class="key-btn" onclick="pressKey('7')">7<span class="key-sub">PQRS</span></div>
-            <div class="key-btn" onclick="pressKey('8')">8<span class="key-sub">TUV</span></div>
-            <div class="key-btn" onclick="pressKey('9')">9<span class="key-sub">WXYZ</span></div>
-            <div></div>
-            <div class="key-btn" onclick="pressKey('0')">0</div>
-            <div style="display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer;" onclick="closePasscode()">Batal</div>
+        <div class="passcode-error" id="passcode-error"></div>
+        <div class="passcode-keypad">
+            <button class="pass-key" onclick="pressPassKey('1')">1</button>
+            <button class="pass-key" onclick="pressPassKey('2')">2<span class="sub">abc</span></button>
+            <button class="pass-key" onclick="pressPassKey('3')">3<span class="sub">def</span></button>
+            <button class="pass-key" onclick="pressPassKey('4')">4<span class="sub">ghi</span></button>
+            <button class="pass-key" onclick="pressPassKey('5')">5<span class="sub">jkl</span></button>
+            <button class="pass-key" onclick="pressPassKey('6')">6<span class="sub">mno</span></button>
+            <button class="pass-key" onclick="pressPassKey('7')">7<span class="sub">pqrs</span></button>
+            <button class="pass-key" onclick="pressPassKey('8')">8<span class="sub">tuv</span></button>
+            <button class="pass-key" onclick="pressPassKey('9')">9<span class="sub">wxyz</span></button>
+            <div style="grid-column: 2;">
+                <button class="pass-key" onclick="pressPassKey('0')">0</button>
+            </div>
         </div>
-        <div class="passcode-error" id="passcodeError"></div>
+        <button class="pass-cancel" onclick="closePasscodePrompt()">Batal</button>
     </div>
 
     <!-- 2. HOMESCREEN -->
-    <div class="screen" id="homescreen">
-        <div class="home-slides-container" id="homeSlidesContainer">
-            <!-- Slide 1 -->
-            <div class="home-slide page-1" id="homeSlide1">
+    <div class="screen hidden-screen" id="homescreen" style="background-image: url('https://i.ibb.co.com/M5WzWbhk/040571acff86430653fb4256f45bd105.jpg');">
+        <div class="home-slider-container" id="home-slider">
+            <!-- Slide 1: Widgets -->
+            <div class="home-page">
+                <!-- Spotify Widget -->
                 <div class="widget-box spotify-widget">
-                    <div class="spotify-art" id="spotifyArt"></div>
-                    <div style="flex-grow: 1;">
-                        <div style="font-size: 12px; opacity: 0.8;">Spotify • Before Yongie's Sleeping</div>
-                        <div style="font-size: 15px; font-weight: 600; margin: 2px 0;">Until I Found You</div>
-                        <div style="font-size: 12px; opacity: 0.7;">Stephen Sanchez</div>
+                    <div class="spotify-top">
+                        <div class="spotify-art" style="background-image: url('https://i.ibb.co.com/G35y8YHN/6bb64ebbf4b46463a682d83afd6cd03f.jpg');"></div>
+                        <div class="spotify-meta">
+                            <div class="spotify-title">To The Bone</div>
+                            <div class="spotify-artist">Pamungkas</div>
+                            <div class="spotify-playlist">Before Yongie's Sleeping</div>
+                        </div>
                     </div>
-                    <div style="font-size: 24px; cursor: pointer;" onclick="toggleMusic()" id="musicPlayBtn">⏸</div>
+                    <div class="spotify-controls">
+                        <div class="audio-visualizer" id="audio-viz">
+                            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                        </div>
+                        <button class="spotify-btn" id="spotify-toggle-btn" onclick="toggleSpotifyMusic()">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" id="spotify-icon-svg"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                        </button>
+                    </div>
                 </div>
-                <div class="widget-box photo-widget" id="photoWidget"></div>
+
+                <!-- Photo Widget -->
+                <div class="widget-box photo-widget" id="photo-widget-container">
+                    <div class="photo-slide active" style="background-image: url('https://i.ibb.co.com/93pHXYwV/IMG-20261028-WA0027.jpg');"></div>
+                    <div class="photo-slide" style="background-image: url('https://i.ibb.co.com/fYPWGhjN/9dc45025288f962c80d02b7d1f4a347a-1.jpg');"></div>
+                    <div class="photo-slide" style="background-image: url('https://i.ibb.co.com/b50b3dNC/4819fac8f9426a72ad1fe7aeaa302c8b.jpg');"></div>
+                </div>
             </div>
-            <!-- Slide 2 -->
-            <div class="home-slide page-2" id="homeSlide2">
+
+            <!-- Slide 2: App Grid -->
+            <div class="home-page">
                 <div class="app-grid">
-                    <div class="app-item" onclick="openApp('camera')"><div class="app-icon" style="background: #000;">📷</div><div class="app-name">Kamera</div></div>
-                    <div class="app-item" onclick="openApp('photos')"><div class="app-icon" style="background: linear-gradient(135deg, #FF9500, #FF2D55);">🖼️</div><div class="app-name">Photos</div></div>
-                    <div class="app-item" onclick="openApp('settings')"><div class="app-icon" style="background: #8E8E93;">⚙️</div><div class="app-name">Settings</div></div>
-                    <div class="app-item" onclick="openApp('grindr')"><div class="app-icon" style="background: #FF9500;">🔥</div><div class="app-name">Grindr</div></div>
-                    <div class="app-item" onclick="openApp('imessage')"><div class="app-icon" style="background: #34C759;">💬</div><div class="app-name">iMessage</div></div>
-                    <div class="app-item" onclick="openApp('maps')"><div class="app-icon" style="background: #007AFF;">🗺️</div><div class="app-name">Maps</div></div>
-                    <div class="app-item" onclick="openApp('findmy')"><div class="app-icon" style="background: #5856D6;">📍</div><div class="app-name">FindMy</div></div>
-                    <div class="app-item" onclick="openApp('x')"><div class="app-icon" style="background: #000;">𝕏</div><div class="app-name">X</div></div>
-                    <div class="app-item" onclick="openApp('instagram')"><div class="app-icon" style="background: linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045);">📸</div><div class="app-name">Instagram</div></div>
-                    <div class="app-item" onclick="openApp('notes')"><div class="app-icon" style="background: #FFCC00;">📝</div><div class="app-name">Notes</div></div>
-                    <div class="app-item" onclick="openApp('trash')"><div class="app-icon" style="background: #3A3A3C;">🗑️</div><div class="app-name">Sampah</div></div>
-                    <div class="app-item" onclick="openApp('naration')"><div class="app-icon" style="background: #AF52DE;">📖</div><div class="app-name">Naration</div></div>
+                    <div class="app-item" onclick="openApp('phone')">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #34c759, #30b0c7);">📞</div>
+                        <span class="app-name">Phone</span>
+                    </div>
+                    <div class="app-item" onclick="openApp('messages')">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #30d158, #34c759);">💬</div>
+                        <span class="app-name">Messages</span>
+                    </div>
+                    <div class="app-item" onclick="openApp('safari')">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #0a84ff, #0056b3);">🧭</div>
+                        <span class="app-name">Safari</span>
+                    </div>
+                    <div class="app-item" onclick="openApp('photos')">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #ff9f0a, #ff453a);">🖼️</div>
+                        <span class="app-name">Photos</span>
+                    </div>
+                    <div class="app-item" onclick="openApp('camera')">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #8e8e93, #3a3a3c);">📷</div>
+                        <span class="app-name">Camera</span>
+                    </div>
+                    <div class="app-item" onclick="openApp('settings')">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #636366, #2c2c2e);">⚙️</div>
+                        <span class="app-name">Settings</span>
+                    </div>
+                    <div class="app-item" onclick="openApp('calendar')">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #ff3b30, #ff453a);">📅</div>
+                        <span class="app-name">Calendar</span>
+                    </div>
+                    <div class="app-item" onclick="openApp('clock')">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #000, #222);">⏰</div>
+                        <span class="app-name">Clock</span>
+                    </div>
+                    <div class="app-item" onclick="openApp('maps')">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #30b0c7, #0a84ff);">🗺️</div>
+                        <span class="app-name">Maps</span>
+                    </div>
+                    <div class="app-item" onclick="openApp('findmy')">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #5856d6, #af52de);">📍</div>
+                        <span class="app-name">Find My</span>
+                    </div>
+                    <div class="app-item" onclick="openApp('x')">
+                        <div class="app-icon" style="background: #000;">✖️</div>
+                        <span class="app-name">X</span>
+                    </div>
+                    <div class="app-item" onclick="openApp('instagram')">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #f58529, #dd2a7b, #8134af);">📸</div>
+                        <span class="app-name">Instagram</span>
+                    </div>
+                    <div class="app-item" onclick="openApp('notes')">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #ffcc00, #ff9f0a);">📝</div>
+                        <span class="app-name">Notes</span>
+                    </div>
+                    <div class="app-item" onclick="openApp('trash')">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #8e8e93, #48484a);">🗑️</div>
+                        <span class="app-name">Trash</span>
+                    </div>
+                    <div class="app-item" onclick="openApp('naration')">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #ff3b30, #af52de);">📖</div>
+                        <span class="app-name">Naration</span>
+                    </div>
+                    <div class="app-item" onclick="openApp('grindr')">
+                        <div class="app-icon" style="background: linear-gradient(135deg, #ff9f0a, #ff453a);">🔥</div>
+                        <span class="app-name">Grindr</span>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="home-pagination">
-            <div class="dot-page active" id="dotPage1" onclick="switchHomeSlide(1)"></div>
-            <div class="dot-page" id="dotPage2" onclick="switchHomeSlide(2)"></div>
+
+        <!-- Dock -->
+        <div class="home-dock">
+            <div class="app-icon" onclick="openApp('phone')" style="background: linear-gradient(135deg, #34c759, #30b0c7);">📞</div>
+            <div class="app-icon" onclick="openApp('messages')" style="background: linear-gradient(135deg, #30d158, #34c759);">💬</div>
+            <div class="app-icon" onclick="openApp('safari')" style="background: linear-gradient(135deg, #0a84ff, #0056b3);">🧭</div>
+            <div class="app-icon" onclick="openApp('photos')" style="background: linear-gradient(135deg, #ff9f0a, #ff453a);">🖼️</div>
+        </div>
+        <div class="home-indicator" onclick="goHome()"></div>
+    </div>
+
+    <!-- 3. iMESSAGE APP WINDOW -->
+    <div class="app-window" id="app-messages">
+        <div class="app-header">
+            <button class="app-back-btn" id="imess-back-btn" onclick="closeImessChat()" style="display: none;">‹ Kembali</button>
+            <div class="app-header-title" id="imess-header-title">Messages</div>
+            <div style="width: 50px;"></div>
+        </div>
+        <div class="app-body">
+            <!-- Chats List View -->
+            <div class="imessage-container" id="imess-list-view">
+                <div class="imessage-tabs">
+                    <button class="imess-tab active">Chats</button>
+                    <button class="imess-tab" onclick="openApp('phone')">Calls</button>
+                    <button class="imess-tab" onclick="openApp('naration')">Stories</button>
+                </div>
+                <div class="chat-list" id="imess-chat-items">
+                    <!-- Dynamic chat rooms inserted via JS -->
+                </div>
+            </div>
+
+            <!-- Active Room Chat View -->
+            <div class="room-chat" id="imess-room-view">
+                <div class="chat-messages" id="imess-msg-container">
+                    <!-- Bubbles -->
+                </div>
+                <div class="typing-indicator" id="imess-typing">
+                    <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+                </div>
+                <div class="chat-input-bar">
+                    <input type="text" class="chat-input" id="imess-input-box" placeholder="iMessage" oninput="playTypingSound()">
+                    <button class="chat-send-btn" onclick="sendUserMessage()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- iMessage Room Chat App -->
-    <div class="app-screen" id="appImessage">
-        <div class="imessage-header">
-            <button class="back-btn" onclick="closeAppScreen()">‹ Chats</button>
-            <div class="chat-contact-info">
-                <div class="chat-avatar" id="chatHeaderAvatar" style="background-image: url('https://i.ibb.co/93pHXYwV/IMG-20261028-WA0027.jpg')"></div>
-                <div class="chat-name" id="chatHeaderName">Mark 💌</div>
-            </div>
-            <div style="width: 40px;"></div>
+    <!-- 4. GRINDR APP WINDOW -->
+    <div class="app-window" id="app-grindr">
+        <div class="app-header">
+            <button class="app-back-btn" onclick="closeApp('grindr')">‹ Home</button>
+            <div class="app-header-title">Grindr</div>
+            <div style="width: 50px;"></div>
         </div>
-        <div class="chat-body" id="imessageChatBody"></div>
-        <div class="chat-input-bar">
-            <input type="text" class="chat-input" id="imessageInput" placeholder="iMessage" disabled>
+        <div class="app-body" id="grindr-body-content">
+            <!-- Grindr Cards or Room Chat -->
         </div>
     </div>
 
-    <!-- Grindr Swipe App -->
-    <div class="app-screen grindr-screen" id="appGrindrSwipe">
-        <div class="grindr-header">
-            <button class="back-btn" onclick="closeAppScreen()">‹ Exit</button>
-            <div class="grindr-logo">GRINDR</div>
-            <div style="width: 30px;"></div>
+    <!-- 5. NARATION APP WINDOW -->
+    <div class="app-window" id="app-naration">
+        <div class="app-header">
+            <button class="app-back-btn" onclick="closeApp('naration')">‹ Home</button>
+            <div class="app-header-title">Naration Notes</div>
+            <div style="width: 50px;"></div>
         </div>
-        <div class="swipe-container" id="swipeContainer">
-            <!-- Cards injected via JS -->
-        </div>
-        <div class="swipe-actions">
-            <button class="swipe-btn btn-pass" onclick="swipeProfile('pass')">✕</button>
-            <button class="swipe-btn btn-like" onclick="swipeProfile('like')">♥</button>
+        <div class="app-body naration-container" id="naration-body">
+            <!-- Notes list -->
+            <div class="note-item" onclick="promptNotePasscode()">
+                <div class="note-title">Baca Narasi 01 Disini</div>
+                <div class="note-preview">Hint: Jam ke taman (Protected)</div>
+            </div>
         </div>
     </div>
 
-    <!-- Grindr Chat App -->
-    <div class="app-screen grindr-screen" id="appGrindrChat">
-        <div class="grindr-header">
-            <button class="back-btn" onclick="closeAppScreen()">‹ Back</button>
-            <div style="font-weight: 600;" id="grindrChatName">Jae 27</div>
-            <div style="width: 30px;"></div>
-        </div>
-        <div class="chat-body" id="grindrChatBody" style="background: #121212;"></div>
-        <div class="chat-input-bar" style="background: #1c1c1e; border-color: #2c2c2e;">
-            <input type="text" class="chat-input" id="grindrInput" style="background: #2c2c2e; color: #fff;" placeholder="Message..." disabled>
-        </div>
-    </div>
-
-    <!-- Naration App -->
-    <div class="app-screen naration-screen" id="appNaration">
-        <div class="naration-header">Notes</div>
-        <div class="notes-list">
-            <div class="note-card" onclick="openNarationNote()">
-                <div style="font-weight: 600; font-size: 16px;">Baca Narasi 01 Disini</div>
-                <div style="font-size: 13px; color: #8e8e93; margin-top: 4px;">Hint : Jam ke taman</div>
-            </div>
-        </div>
-        <div class="note-pass-modal" id="notePassModal">
-            <div style="font-size: 18px; font-weight: 600; margin-bottom: 10px;">Masukkan Passcode Catatan</div>
-            <div style="font-size: 13px; color: #666; margin-bottom: 20px;">Hint: Jam ke taman (4 digit)</div>
-            <div class="passcode-dots" style="border-color: #000;">
-                <div class="passcode-dot" style="border-color:#000" id="nDot0"></div>
-                <div class="passcode-dot" style="border-color:#000" id="nDot1"></div>
-                <div class="passcode-dot" style="border-color:#000" id="nDot2"></div>
-                <div class="passcode-dot" style="border-color:#000" id="nDot3"></div>
-            </div>
-            <div class="keypad" style="color: #000;">
-                <div class="key-btn" style="background: rgba(0,0,0,0.05); color:#000;" onclick="pressNarationKey('1')">1</div>
-                <div class="key-btn" style="background: rgba(0,0,0,0.05); color:#000;" onclick="pressNarationKey('2')">2</div>
-                <div class="key-btn" style="background: rgba(0,0,0,0.05); color:#000;" onclick="pressNarationKey('3')">3</div>
-                <div class="key-btn" style="background: rgba(0,0,0,0.05); color:#000;" onclick="pressNarationKey('4')">4</div>
-                <div class="key-btn" style="background: rgba(0,0,0,0.05); color:#000;" onclick="pressNarationKey('5')">5</div>
-                <div class="key-btn" style="background: rgba(0,0,0,0.05); color:#000;" onclick="pressNarationKey('6')">6</div>
-                <div class="key-btn" style="background: rgba(0,0,0,0.05); color:#000;" onclick="pressNarationKey('7')">7</div>
-                <div class="key-btn" style="background: rgba(0,0,0,0.05); color:#000;" onclick="pressNarationKey('8')">8</div>
-                <div class="key-btn" style="background: rgba(0,0,0,0.05); color:#000;" onclick="pressNarationKey('9')">9</div>
-                <div></div>
-                <div class="key-btn" style="background: rgba(0,0,0,0.05); color:#000;" onclick="pressNarationKey('0')">0</div>
-                <div style="display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; color:var(--ios-blue);" onclick="closeNarationPass()">Batal</div>
-            </div>
-            <div class="passcode-error" id="narationError"></div>
-        </div>
-        <div id="narationContentModal" style="position: absolute; inset: 0; background: #fff; z-index: 101; display: none; padding: 30px; overflow-y: auto;">
-            <button class="back-btn" onclick="closeNarationContent()" style="margin-bottom: 20px;">‹ Back</button>
-            <h2 style="margin-bottom: 15px; font-size: 24px;">Narasi 01 : Until I Make U Mine</h2>
-            <p style="font-size: 16px; line-height: 1.6; color: #333;">
-                Hari itu, matahari sore menyinari sudut taman Suropati dengan lembut. Langkah kaki Mark dan debar tak terduga dari Jaehyun menyatu dalam satu cerita penantian.<br><br>
-                Di antara bisingnya kota Jakarta dan hangatnya secangkir kopi Fore, Adin menyadari satu hal: hati tidak pernah salah memilih tempat untuk pulang.<br><br>
-                <b>"Because in every timeline, until I make you mine, my world belongs to you."</b>
-            </p>
-        </div>
-    </div>
 </div>
 
-<!-- Audio Background (Spotify Stream simulasi/iframe tersembunyi) -->
-<iframe id="spotifyAudio" style="display:none;" src="https://open.spotify.com/embed/track/4OTTXB8nq90dFFp9dhXlWu?autoplay=1" allow="autoplay"></iframe>
-
 <script>
-    /* ================= AUDIO SYNTHESIZER (SFX) ================= */
+    /* ==========================================
+       AUDIO SYNTHESIZER & SOUND EFFECTS (Web Audio API)
+       ========================================== */
+    let audioMuted = false;
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    function playSfx(type) {
+    function playSound(type) {
+        if (audioMuted) return;
         if (audioCtx.state === 'suspended') {
             audioCtx.resume();
         }
@@ -775,617 +1160,615 @@
         const gain = audioCtx.createGain();
         osc.connect(gain);
         gain.connect(audioCtx.destination);
+
         const now = audioCtx.currentTime;
 
-        if (type === 'unlock') {
+        if (type === 'lock') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.exponentialRampToValueAtTime(400, now + 0.08);
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+            osc.start(now);
+            osc.stop(now + 0.08);
+        } else if (type === 'unlock') {
+            osc.type = 'sine';
             osc.frequency.setValueAtTime(400, now);
-            osc.frequency.exponentialRampToValueAtTime(800, now + 0.15);
+            osc.frequency.exponentialRampToValueAtTime(900, now + 0.12);
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+            osc.start(now);
+            osc.stop(now + 0.12);
+        } else if (type === 'click') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(300, now);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.03);
+            osc.start(now);
+            osc.stop(now + 0.03);
+        } else if (type === 'type') {
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(600 + Math.random() * 200, now);
+            gain.gain.setValueAtTime(0.05, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.02);
+            osc.start(now);
+            osc.stop(now + 0.02);
+        } else if (type === 'send') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(500, now);
+            osc.frequency.exponentialRampToValueAtTime(1200, now + 0.15);
             gain.gain.setValueAtTime(0.2, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
             osc.start(now);
             osc.stop(now + 0.15);
-        } else if (type === 'typing') {
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(300 + Math.random() * 200, now);
-            gain.gain.setValueAtTime(0.05, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-            osc.start(now);
-            osc.stop(now + 0.05);
-        } else if (type === 'sent') {
-            osc.frequency.setValueAtTime(600, now);
-            osc.frequency.exponentialRampToValueAtTime(900, now + 0.1);
-            gain.gain.setValueAtTime(0.15, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-            osc.start(now);
-            osc.stop(now + 0.1);
         } else if (type === 'notif') {
-            osc.frequency.setValueAtTime(880, now);
-            osc.frequency.setValueAtTime(1200, now + 0.08);
-            gain.gain.setValueAtTime(0.2, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(750, now);
+            osc.frequency.setValueAtTime(1100, now + 0.08);
+            gain.gain.setValueAtTime(0.25, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
             osc.start(now);
-            osc.stop(now + 0.2);
+            osc.stop(now + 0.25);
         }
     }
 
-    /* ================= GLOBAL STATE & DATA ================= */
-    let currentPasscode = "";
-    let currentNarationPin = "";
-    let homeSlideIndex = 1;
-    let activeApp = null;
-    let currentChatRoom = null;
-    let musicPlaying = true;
-
-    // Persistent Storage Helper
-    function getStorage(key, defaultVal) {
-        const val = localStorage.getItem('until_i_make_u_' + key);
-        return val ? JSON.parse(val) : defaultVal;
-    }
-    function setStorage(key, val) {
-        localStorage.setItem('until_i_make_u_' + key, JSON.stringify(val));
+    function toggleMute() {
+        audioMuted = !audioMuted;
+        document.getElementById('mute-toggle-btn').innerText = audioMuted ? 'Audio: OFF' : 'Audio: ON';
     }
 
-    // Chat Data State
-    let chatsData = getStorage('chats', {
-        mark: [
-            { sender: 'peer', text: 'kamu jadi ke taman ga mbul' }
-        ],
-        grindrJae: [],
-        imessJaehyun: []
-    });
+    let lastTypeSound = 0;
+    function playTypingSound() {
+        const now = Date.now();
+        if (now - lastTypeSound > 80) {
+            playSound('type');
+            lastTypeSound = now;
+        }
+    }
 
-    // Grindr Profiles Data
+    /* ==========================================
+       GLOBAL STATE & STORY ORCHESTRATION
+       ========================================== */
+    let currentPasscodeString = "";
+    let isUnlocked = false;
+    let activeNotification = null;
+    let currentOpenApp = null;
+    let activeChatRoom = null;
+    let spotifyPlaying = false;
+    let photoSlideIndex = 0;
+
+    // Grindr profiles data
     const grindrProfiles = [
-        { name: "Hamka, 24", img: "https://i.ibb.co/qLfzZS14/6b3927a9d482dcd69490a6567b08fc2d.jpg" },
-        { name: "Suney, 20", img: "https://i.ibb.co/C5jv058y/133a2794115ec21f7a2604fb719d49b8.jpg" },
-        { name: "jibar, 20", img: "https://i.ibb.co/Xrs1shH5/3b5f54bc59c53f26d4d19c049905720b.jpg" },
-        { name: "david, 19", img: "https://i.ibb.co/bjM83R8Z/4c6266aca9b64c462e7ef2b89c43d623.jpg" },
-        { name: "kennan, 18", img: "https://i.ibb.co/Rp0zFnK7/79f39f9df6cfd66e7661ee52e39f6588.jpg" },
-        { name: "bagus, 18", img: "https://i.ibb.co/W4W250JK/aa99140e8bc344670fc66d0f43f878d4.jpg" },
-        { name: "jonan, 25", img: "https://i.ibb.co/S73TrvwR/f210aa0e31defc607338ad6c8f23afdf.jpg" },
-        { name: "jae, 27", img: "https://i.ibb.co/JRGCGhRt/f518d7ef576cfaf3c7388ec76a3ec1f2.jpg" }
+        { name: "Hamka", age: 24, photo: "https://i.ibb.co.com/qLfzZS14/6b3927a9d482dcd69490a6567b08fc2d.jpg" },
+        { name: "Suney", age: 20, photo: "https://i.ibb.co.com/C5jv058y/133a2794115ec21f7a2604fb719d49b8.jpg" },
+        { name: "jibar", age: 20, photo: "https://i.ibb.co.com/Xrs1shH5/3b5f54bc59c53f26d4d19c049905720b.jpg" },
+        { name: "david", age: 19, photo: "https://i.ibb.co.com/bjM83R8Z/4c6266aca9b64c462e7ef2b89c43d623.jpg" },
+        { name: "kennan", age: 18, photo: "https://i.ibb.co.com/Rp0zFnK7/79f39f9df6cfd66e7661ee52e39f6588.jpg" },
+        { name: "bagus", age: 18, photo: "https://i.ibb.co.com/W4W250JK/aa99140e8bc344670fc66d0f43f878d4.jpg" },
+        { name: "jonan", age: 25, photo: "https://i.ibb.co.com/S73TrvwR/f210aa0e31defc607338ad6c8f23afdf.jpg" },
+        { name: "jae", age: 27, photo: "https://i.ibb.co.com/JRGCGhRt/f518d7ef576cfaf3c7388ec76a3ec1f2.jpg" }
     ];
-    let currentGrindrIndex = getStorage('grindrIndex', 0);
-    let jaeMatched = getStorage('jaeMatched', false);
+    let currentGrindrIndex = 0;
 
-    /* ================= INITIALIZATION & TOUCH EVENTS ================= */
-    window.addEventListener('DOMContentLoaded', () => {
-        updateClock();
-        setInterval(updateClock, 1000);
-        initPhotoWidget();
+    // Story Step Controller
+    let storyStage = parseInt(localStorage.getItem('until_story_stage') || '0');
 
-        // Lockscreen Swipe Up Handler
-        const lockscreen = document.getElementById('lockscreen');
-        let startY = 0;
-        lockscreen.addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
-        lockscreen.addEventListener('touchend', e => {
-            if (startY - e.changedTouches[0].clientY > 80) {
-                document.getElementById('passcode-screen').classList.add('active');
-            }
-        });
-        // Mouse fallback for desktop testing
-        lockscreen.addEventListener('mousedown', e => { startY = e.clientY; });
-        lockscreen.addEventListener('mouseup', e => {
-            if (startY - e.clientY > 80) {
-                document.getElementById('passcode-screen').classList.add('active');
-            }
-        });
+    // Chat History State
+    let chatData = JSON.parse(localStorage.getItem('until_chat_data')) || {
+        "mark": [
+            { sender: "b", text: "kamu jadi ke taman ga mbul" }
+        ],
+        "jaehyun": [],
+        "unknown": []
+    };
 
-        // Homescreen Swipe Handler
-        const homeContainer = document.getElementById('homescreen');
-        let homeStartX = 0;
-        homeContainer.addEventListener('touchstart', e => { homeStartX = e.touches[0].clientY ? e.touches[0].clientX : 0; });
-        homeContainer.addEventListener('touchend', e => {
-            let diffX = homeStartX - e.changedTouches[0].clientX;
-            if (Math.abs(diffX) > 50) {
-                if (diffX > 0) switchHomeSlide(2);
-                else switchHomeSlide(1);
-            }
-        });
-    });
+    function saveState() {
+        localStorage.setItem('until_story_stage', storyStage);
+        localStorage.setItem('until_chat_data', JSON.stringify(chatData));
+    }
 
-    function updateClock() {
+    // Initialize Time & Widgets
+    setInterval(() => {
         const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const mins = String(now.getMinutes()).padStart(2, '0');
-        document.getElementById('lockTime').innerText = `${hours}:${mins}`;
-    }
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        document.getElementById('status-time').innerText = timeStr;
+        document.getElementById('lock-time-text').innerText = timeStr;
+        const options = { weekday: 'long', day: 'numeric', month: 'long' };
+        document.getElementById('lock-date-text').innerText = now.toLocaleDateString('id-ID', options);
+    }, 1000);
 
-    /* ================= PHOTO WIDGET SLIDESHOW ================= */
-    const photos = [
-        'https://i.ibb.co/93pHXYwV/IMG-20261028-WA0027.jpg',
-        'https://i.ibb.co/fYPWGhjN/9dc45025288f962c80d02b7d1f4a347a-1.jpg',
-        'https://i.ibb.co/b50b3dNC/4819fac8f9426a72ad1fe7aeaa302c8b.jpg'
-    ];
-    let photoIdx = 0;
-    function initPhotoWidget() {
-        const widget = document.getElementById('photoWidget');
-        widget.style.backgroundImage = `url('${photos[0]}')`;
-        setInterval(() => {
-            photoIdx = (photoIdx + 1) % photos.length;
-            widget.style.backgroundImage = `url('${photos[photoIdx]}')`;
-        }, 4000);
-    }
+    // Photo Carousel
+    setInterval(() => {
+        const slides = document.querySelectorAll('.photo-slide');
+        if (slides.length > 0) {
+            slides[photoSlideIndex].classList.remove('active');
+            photoSlideIndex = (photoSlideIndex + 1) % slides.length;
+            slides[photoSlideIndex].classList.add('active');
+        }
+    }, 4000);
 
-    function toggleMusic() {
-        musicPlaying = !musicPlaying;
-        document.getElementById('musicPlayBtn').innerText = musicPlaying ? '⏸' : '▶';
-    }
-
-    function switchHomeSlide(slideNum) {
-        homeSlideIndex = slideNum;
-        if (slideNum === 1) {
-            document.getElementById('homeSlide1').style.transform = 'translateX(0)';
-            document.getElementById('homeSlide2').style.transform = 'translateX(100%)';
-            document.getElementById('dotPage1').classList.add('active');
-            document.getElementById('dotPage2').classList.remove('active');
+    // Spotify Widget Toggle
+    function toggleSpotifyMusic() {
+        spotifyPlaying = !spotifyPlaying;
+        playSound('click');
+        const viz = document.getElementById('audio-viz');
+        const iconSvg = document.getElementById('spotify-icon-svg');
+        if (spotifyPlaying) {
+            viz.style.opacity = '1';
+            iconSvg.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
         } else {
-            document.getElementById('homeSlide1').style.transform = 'translateX(-100%)';
-            document.getElementById('homeSlide2').style.transform = 'translateX(0)';
-            document.getElementById('dotPage2').classList.add('active');
-            document.getElementById('dotPage1').classList.remove('active');
+            viz.style.opacity = '0.3';
+            iconSvg.innerHTML = '<polygon points="5,3 19,12 5,21"/>';
         }
     }
 
-    /* ================= PASSCODE & UNLOCK ================= */
-    function pressKey(num) {
-        if (currentPasscode.length < 4) {
-            currentPasscode += num;
-            updatePasscodeDots();
-            playSfx('typing');
-        }
-        if (currentPasscode.length === 4) {
-            if (currentPasscode === '1007') {
-                playSfx('unlock');
-                setTimeout(() => {
-                    document.getElementById('passcode-screen').classList.remove('active');
-                    document.getElementById('lockscreen').classList.remove('active');
-                    document.getElementById('homescreen').classList.add('active');
-                    currentPasscode = "";
-                    updatePasscodeDots();
-                    triggerScene1();
-                }, 300);
-            } else {
-                document.getElementById('passcodeError').innerText = "Passcode salah, cek akun author";
-                setTimeout(() => {
-                    currentPasscode = "";
-                    updatePasscodeDots();
-                    document.getElementById('passcodeError').innerText = "";
-                }, 1200);
+    /* ==========================================
+       LOCKSCREEN & PASSCODE LOGIC
+       ========================================== */
+    function openPasscodePrompt() {
+        playSound('click');
+        document.getElementById('passcode-overlay').classList.add('active');
+        currentPasscodeString = "";
+        updatePassDots();
+    }
+
+    function closePasscodePrompt() {
+        playSound('click');
+        document.getElementById('passcode-overlay').classList.remove('active');
+    }
+
+    function pressPassKey(num) {
+        playSound('click');
+        if (currentPasscodeString.length < 4) {
+            currentPasscodeString += num;
+            updatePassDots();
+            if (currentPasscodeString.length === 4) {
+                setTimeout(verifyPasscode, 200);
             }
         }
     }
 
-    function updatePasscodeDots() {
+    function updatePassDots() {
         for (let i = 0; i < 4; i++) {
-            const dot = document.getElementById(`dot${i}`);
-            if (i < currentPasscode.length) dot.classList.add('filled');
-            else dot.classList.remove('filled');
+            const dot = document.getElementById(`pdot-${i}`);
+            if (i < currentPasscodeString.length) {
+                dot.classList.add('filled');
+            } else {
+                dot.classList.remove('filled');
+            }
         }
     }
 
-    function closePasscode() {
-        document.getElementById('passcode-screen').classList.remove('active');
-        currentPasscode = "";
-        updatePasscodeDots();
-    }
-
-    /* ================= NOTIFICATION SYSTEM ================= */
-    let currentNotifCallback = null;
-
-    function showNotification(title, text, icon, callback) {
-        document.getElementById('notifTitle').innerText = title;
-        document.getElementById('notifText').innerText = text;
-        document.getElementById('notifIcon').innerText = icon;
-        document.getElementById('notifBanner').classList.add('show');
-        playSfx('notif');
-        currentNotifCallback = callback;
-    }
-
-    function handleNotificationClick() {
-        document.getElementById('notifBanner').classList.remove('show');
-        if (currentNotifCallback) currentNotifCallback();
-    }
-
-    // Auto hide notification after 5s if unclicked
-    setTimeout(() => {
-        // handled dynamically
-    }, 5000);
-
-    /* ================= STORYFLOW & APP MANAGEMENT ================= */
-    let storyStage = getStorage('storyStage', 1);
-
-    function triggerScene1() {
-        if (storyStage <= 1) {
+    function verifyPasscode() {
+        if (currentPasscodeString === "1007") {
+            playSound('unlock');
+            document.getElementById('passcode-overlay').classList.remove('active');
+            unlockDevice();
+        } else {
+            playSound('click');
+            document.getElementById('passcode-error').innerText = "Passcode salah, cek akun author";
             setTimeout(() => {
-                showNotification("Mark 💌", "kamu jadi ke taman ga mbul", "💬", () => {
-                    openApp('imessage', 'mark');
-                });
+                currentPasscodeString = "";
+                updatePassDots();
+                document.getElementById('passcode-error').innerText = "";
             }, 1000);
         }
     }
 
-    function openApp(appName, param) {
-        activeApp = appName;
-        document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active'));
+    function unlockDevice() {
+        isUnlocked = true;
+        document.getElementById('lockscreen').classList.add('hidden-screen');
+        document.getElementById('homescreen').classList.remove('hidden-screen');
+        
+        // Trigger initial story stage 0 if first unlock
+        if (storyStage === 0) {
+            storyStage = 1;
+            saveState();
+            setTimeout(() => {
+                showNotification("Messages", "Mark 💌", "kamu jadi ke taman ga mbul", "💬", "#30d158", "mark_initial");
+            }, 1200);
+        }
+    }
 
-        if (appName === 'imessage') {
-            document.getElementById('appImessage').classList.add('active');
-            openImessageChat(param || 'mark');
+    function goHome() {
+        playSound('click');
+        // Close any open app windows
+        document.querySelectorAll('.app-window').forEach(win => win.classList.remove('active'));
+        currentOpenApp = null;
+    }
+
+    function toggleDynamicIsland() {
+        const di = document.getElementById('dynamic-island');
+        di.classList.toggle('expanded');
+    }
+
+    /* ==========================================
+       NOTIFICATION SYSTEM
+       ========================================== */
+    function showNotification(appName, sender, text, iconChar, iconBg, actionId) {
+        playSound('notif');
+        const banner = document.getElementById('notification-banner');
+        document.getElementById('notif-app-title').innerText = `${appName} • ${sender}`;
+        document.getElementById('notif-text').innerText = text;
+        document.getElementById('notif-icon').innerText = iconChar;
+        document.getElementById('notif-icon').style.background = iconBg;
+        
+        activeNotification = actionId;
+        banner.classList.add('show');
+
+        setTimeout(() => {
+            banner.classList.remove('show');
+        }, 5000);
+    }
+
+    function handleNotificationClick() {
+        playSound('click');
+        document.getElementById('notification-banner').classList.remove('show');
+        
+        if (activeNotification === "mark_initial") {
+            openApp('messages');
+            openChatRoom('mark');
+        } else if (activeNotification === "grindr_prompt") {
+            openApp('grindr');
+        } else if (activeNotification === "jae_match") {
+            openApp('grindr');
+            openGrindrChat();
+        } else if (activeNotification === "unknown_msg") {
+            openApp('messages');
+            openChatRoom('unknown');
+        } else if (activeNotification === "mark_front") {
+            openApp('messages');
+            openChatRoom('mark');
+        } else if (activeNotification === "jae_sorry") {
+            openApp('messages');
+            openChatRoom('jaehyun');
+        } else if (activeNotification === "naration_notif") {
+            openApp('naration');
+        }
+        activeNotification = null;
+    }
+
+    /* ==========================================
+       APP MANAGER
+       ========================================== */
+    function openApp(appName) {
+        playSound('click');
+        if (appName === 'messages') {
+            document.getElementById('app-messages').classList.add('active');
+            renderChatList();
         } else if (appName === 'grindr') {
-            if (jaeMatched) {
-                // Langsung ke chat jae jika sudah match
-                document.getElementById('appGrindrChat').classList.add('active');
-                renderGrindrChat();
-            } else {
-                document.getElementById('appGrindrSwipe').classList.add('active');
-                renderGrindrSwipe();
-            }
+            document.getElementById('app-grindr').classList.add('active');
+            renderGrindrScreen();
         } else if (appName === 'naration') {
-            document.getElementById('appNaration').classList.add('active');
+            document.getElementById('app-naration').classList.add('active');
         } else {
-            // Dummy apps
-            alert("Aplikasi " + appName + " sedang tidak aktif dalam skrip ini.");
+            const win = document.getElementById(`app-${appName}`);
+            if (win) win.classList.add('active');
+        }
+        currentOpenApp = appName;
+    }
+
+    function closeApp(appName) {
+        playSound('click');
+        const win = document.getElementById(`app-${appName}`);
+        if (win) win.classList.remove('active');
+        currentOpenApp = null;
+    }
+
+    /* ==========================================
+       iMESSAGE & CHAT LOGIC
+       ========================================== */
+    function renderChatList() {
+        const listEl = document.getElementById('imess-chat-items');
+        listEl.innerHTML = '';
+        
+        const contacts = [
+            { id: 'mark', name: 'Mark 💌', preview: chatData.mark[chatData.mark.length - 1]?.text || 'Tap to chat', bg: '#0A84FF' },
+            { id: 'jaehyun', name: chatData.jaehyun.length > 5 ? 'Jaehyun' : 'Jaehyun', preview: chatData.jaehyun[chatData.jaehyun.length - 1]?.text || 'No messages', bg: '#30D158' },
+            { id: 'unknown', name: chatData.unknown.length > 2 ? 'Jaehyun' : 'Unknown', preview: chatData.unknown[chatData.unknown.length - 1]?.text || 'No messages', bg: '#FF9F0A' }
+        ];
+
+        contacts.forEach(c => {
+            const item = document.createElement('div');
+            item.className = 'chat-list-item';
+            item.onclick = () => openChatRoom(c.id);
+            item.innerHTML = `
+                <div class="chat-avatar" style="background:${c.bg};">${c.name[0]}</div>
+                <div class="chat-list-info">
+                    <div class="chat-list-name">${c.name}</div>
+                    <div class="chat-list-preview">${c.preview}</div>
+                </div>
+            `;
+            listEl.appendChild(item);
+        });
+    }
+
+    function openChatRoom(roomId) {
+        playSound('click');
+        activeChatRoom = roomId;
+        document.getElementById('imess-list-view').style.display = 'none';
+        document.getElementById('imess-room-view').classList.add('active');
+        document.getElementById('imess-back-btn').style.display = 'flex';
+        
+        const titles = { mark: 'Mark 💌', jaehyun: 'Jaehyun', unknown: 'Unknown' };
+        document.getElementById('imess-header-title').innerText = titles[roomId] || 'Messages';
+        
+        renderMessages();
+
+        // Trigger Mark story progression if first open
+        if (roomId === 'mark' && chatData.mark.length === 1 && storyStage === 1) {
+            runMarkInitialScript();
         }
     }
 
-    function closeAppScreen() {
-        document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active'));
-        activeApp = null;
+    function closeImessChat() {
+        playSound('click');
+        activeChatRoom = null;
+        document.getElementById('imess-room-view').classList.remove('active');
+        document.getElementById('imess-list-view').style.display = 'flex';
+        document.getElementById('imess-back-btn').style.display = 'none';
+        document.getElementById('imess-header-title').innerText = 'Messages';
+        renderChatList();
     }
 
-    /* ================= SCENE 2: iMESSAGE MARK ================= */
-    const markScript = [
-        { sender: 'user', text: 'jadii kok' },
-        { sender: 'user', text: 'cuma ini lagi di fore' },
-        { sender: 'user', text: 'kamu mau nitip fore?' },
-        { sender: 'peer', text: 'gausah tadi aku udah ngopi sama jeno' },
-        { sender: 'peer', text: 'kamu dari fore langsung jalan ke taman atau pulang kerumah dulu' },
-        { sender: 'user', text: 'kayaknya aku mau langsung aja deh' },
-        { sender: 'peer', text: 'naik apa?' },
-        { sender: 'user', text: 'nanti aku naik gojek aja terus lanjut busway' },
-        { sender: 'peer', text: 'kelamaan gasi mbul?' },
-        { sender: 'peer', text: 'aku jemput aja, kan kita bareng ke tamannya' },
-        { sender: 'user', text: 'ya justru karna aku tau bsd ke jaksel tuh jauh, makannya aku ga mau kamu jemput' },
-        { sender: 'peer', text: 'gapapa mbul, kamu nanti di busway ga dapet tempat duduk, rush hour lho ini' },
-        { sender: 'peer', text: 'kamu tunggu di fore ya, aku on the way sekarang' },
-        { sender: 'user', text: '😔😔😔' },
-        { sender: 'user', text: 'emang gapernah dengerin' },
-        { sender: 'user', text: 'hati hatii ya sayangku, makasii udah mau jemput aku 🥺' }
-    ];
-
-    function openImessageChat(target) {
-        const body = document.getElementById('imessageChatBody');
-        body.innerHTML = '';
-        document.getElementById('chatHeaderName').innerText = "Mark 💌";
-        document.getElementById('chatHeaderAvatar').style.backgroundImage = "url('https://i.ibb.co/93pHXYwV/IMG-20261028-WA0027.jpg')";
-
-        // Render existing saved messages
-        let messages = chatsData.mark;
-        renderMessages(body, messages);
-
-        // Auto play script if not completed
-        if (messages.length < markScript.length + 1 && storyStage <= 2) {
-            runAutoScript(markScript, messages, body, 'mark', () => {
-                setStorage('chats', chatsData);
-                storyStage = 3;
-                setStorage('storyStage', storyStage);
-                // Trigger Scene 3 Grindr Notification
-                setTimeout(() => {
-                    showNotification("Grindr", "5 orang kini menantimu", "🔥", () => {
-                        openApp('grindr');
-                    });
-                }, 1500);
-            });
-        }
-    }
-
-    function renderMessages(container, messages) {
+    function renderMessages() {
+        const container = document.getElementById('imess-msg-container');
         container.innerHTML = '';
-        messages.forEach(m => {
+        const msgs = chatData[activeChatRoom] || [];
+        msgs.forEach(m => {
             const bubble = document.createElement('div');
-            bubble.className = `chat-bubble ${m.sender === 'user' ? 'sent' : 'received'}`;
+            bubble.className = `message-bubble ${m.sender === 'a' ? 'outgoing' : 'incoming'}`;
             bubble.innerText = m.text;
             container.appendChild(bubble);
         });
         container.scrollTop = container.scrollHeight;
     }
 
-    function runAutoScript(scriptArr, messagesArr, container, chatKey, onComplete) {
-        let index = messagesArr.length - 1;
-        function nextBubble() {
-            if (index < scriptArr.length) {
+    function sendUserMessage() {
+        const input = document.getElementById('imess-input-box');
+        const text = input.value.trim();
+        if (!text) return;
+        
+        playSound('send');
+        chatData[activeChatRoom].push({ sender: 'a', text: text });
+        input.value = '';
+        renderMessages();
+        saveState();
+
+        // Check story progression triggers based on user responses
+        checkStoryTriggers(text);
+    }
+
+    function pushBotMessage(roomId, text, callback) {
+        const typing = document.getElementById('imess-typing');
+        if (activeChatRoom === roomId) typing.style.display = 'flex';
+        
+        setTimeout(() => {
+            if (activeChatRoom === roomId) typing.style.display = 'none';
+            playSound('notif');
+            chatData[roomId].push({ sender: 'b', text: text });
+            if (activeChatRoom === roomId) renderMessages();
+            saveState();
+            if (callback) callback();
+        }, 1500);
+    }
+
+    /* ==========================================
+       STORYLINE SCRIPTED EXECUTIONS
+       ========================================== */
+    function runMarkInitialScript() {
+        storyStage = 2;
+        saveState();
+        // Mark asks, user replies or automated script flows if needed
+    }
+
+    function checkStoryTriggers(userText) {
+        if (activeChatRoom === 'mark') {
+            const len = chatData.mark.length;
+            if (len === 2) {
+                pushBotMessage('mark', "gausah tadi aku udah ngopi sama jeno\nkamu dari fore langsung jalan ke taman atau pulang kerumah dulu");
+            } else if (len === 4) {
+                pushBotMessage('mark', "naik apa?");
+            } else if (len === 6) {
+                pushBotMessage('mark', "kelamaan gasi mbul?\naku jemput aja, kan kita bareng ke tamannya");
+            } else if (len === 8) {
+                pushBotMessage('mark', "gapapa mbul, kamu nanti di busway ga dapet tempat duduk, rush hour lho ini\nkamu tunggu di fore ya, aku on the way sekarang");
+            } else if (len === 10) {
+                // Last Mark message sent -> Trigger Grindr notification
+                storyStage = 3;
+                saveState();
                 setTimeout(() => {
-                    const item = scriptArr[index];
-                    messagesArr.push(item);
-                    renderMessages(container, messagesArr);
-                    playSfx(item.sender === 'user' ? 'sent' : 'notif');
-                    setStorage('chats', chatsData);
-                    index++;
-                    nextBubble();
-                }, 1750);
-            } else {
-                if (onComplete) onComplete();
+                    showNotification("Grindr", "Ayo Cari Pasanganmu", "5 orang kini menantimu", "🔥", "#ff9f0a", "grindr_prompt");
+                }, 2000);
             }
-        }
-        nextBubble();
-    }
-
-    /* ================= SCENE 3 & 4: GRINDR SWIPE & CHAT JAE ================= */
-    function renderGrindrSwipe() {
-        const container = document.getElementById('swipeContainer');
-        container.innerHTML = '';
-        if (currentGrindrIndex >= grindrProfiles.length) {
-            currentGrindrIndex = grindrProfiles.length - 1;
-        }
-        const profile = grindrProfiles[currentGrindrIndex];
-        const card = document.createElement('div');
-        card.className = 'swipe-card';
-        card.style.backgroundImage = `url('${profile.img}')`;
-        card.innerHTML = `
-            <div class="swipe-card-info">
-                <div style="font-size: 24px; font-weight: 700;">${profile.name}</div>
-                <div style="font-size: 14px; opacity: 0.8;">📍 1 km away</div>
-            </div>
-        `;
-        container.appendChild(card);
-    }
-
-    function swipeProfile(action) {
-        playSfx('typing');
-        if (currentGrindrIndex === grindrProfiles.length - 1 && action === 'like') {
-            // Match with Jae (Index 8)
-            jaeMatched = true;
-            setStorage('jaeMatched', true);
-            showNotification("Grindr", "Jae 27 kini dapat berbicara denganmu!", "🔥", () => {
-                openApp('grindr');
-            });
-        } else {
-            currentGrindrIndex = (currentGrindrIndex + 1) % grindrProfiles.length;
-            setStorage('grindrIndex', currentGrindrIndex);
-            renderGrindrSwipe();
-        }
-    }
-
-    const jaeGrindrScript = [
-        { sender: 'user', text: 'eh maaf aku kepencet like.....' },
-        { sender: 'peer', text: 'hi' },
-        { sender: 'peer', text: 'yah kirain beneran di like' },
-        { sender: 'user', text: 'maaf pliss 😔😔😔' },
-        { sender: 'peer', text: 'oke oke' },
-        { sender: 'peer', text: 'tapi ini kita gamau ngobrol dikit kah hahaha' },
-        { sender: 'peer', text: 'pfp kamu lucu' },
-        { sender: 'user', text: 'eh wkwk aman kok ngobrol pun' },
-        { sender: 'user', text: 'pfp aku se ngezoom itu... kok bisa bilang lucu, keliatan aja ngga' },
-        { sender: 'peer', text: 'orang lucu nan ntik kek kamu mah mau digimanain fotonya tetep aja' },
-        { sender: 'user', text: 'tetep apa?' },
-        { sender: 'peer', text: 'tetep lucu cantik imut gemes sayangku' },
-        { sender: 'user', text: 'JAE APAANDAH YH KM' },
-        { sender: 'peer', text: 'hahahha maaf maaff' },
-        { sender: 'peer', text: 'anw kamu stay dimana yongie' },
-        { sender: 'user', text: 'aku di kemayoran' },
-        { sender: 'peer', text: 'yg dkt jxpo?' },
-        { sender: 'user', text: 'bukan tapi masih se daerah lah' },
-        { sender: 'user', text: 'kamu sendiri stay dimana?' },
-        { sender: 'peer', text: 'aku di menteng' },
-        { sender: 'user', text: 'ganteng, mateng, menteng' },
-        { sender: 'user', text: 'cocok deh' },
-        { sender: 'peer', text: 'hahaha kenapa emang dengan menteng' },
-        { sender: 'peer', text: 'iya cocok sama kamu yongie' },
-        { sender: 'user', text: 'ya secara menteng kan mahal mampus rumahnya 😭 aku aja di kemayoran kost nya 2jt doang udh gakuat rasanya' },
-        { sender: 'user', text: 'MAKSUDNYA TUH KAMU ORGNYA COCOK GTU PERFECT GTU DEHH, BUKAN COCOK SAMA AKU' },
-        { sender: 'peer', text: 'ngga lah ini aku juga masih tinggal sama' },
-        { sender: 'peer', text: 'lagian kamu ngomongnya cocok cocok gitu' },
-        { sender: 'user', text: 'yaaaa... ga gitu maksudnya ih 😔😔' },
-        { sender: 'user', text: 'eh iya aku baru inget, menteng yg deket taman suropati bukan?' },
-        { sender: 'peer', text: 'lah kok kamu tau?' },
-        { sender: 'peer', text: 'kamu udah ngestalk aku kah 😂' },
-        { sender: 'user', text: 'EH NGGAAA' },
-        { sender: 'user', text: 'kebetulan jam 5 ini aku mau kesana emanggg' },
-        { sender: 'peer', text: 'tu taman deket banget sama rumah aku, cuma 10 menit pake mobil nyampe' },
-        { sender: 'peer', text: 'kamu mau ngapain disana? suropati cuma sampe jam 7 deh bukanya' },
-        { sender: 'user', text: 'mau main aja sambil take foto, sama nemenin pacar aku main basket di taman yang seberang nya suropati' },
-        { sender: 'peer', text: 'kamu taken?' },
-        { sender: 'user', text: 'haha' },
-        { sender: 'user', text: 'iyaa' },
-        { sender: 'peer', text: 'waduh, kaget aku' },
-        { sender: 'user', text: 'tapi cowo aku tau kok aku main grindr, emang cuma mau nyari temen aja' },
-        { sender: 'peer', text: 'luas hati ya pacar kamu' },
-        { sender: 'peer', text: 'boleh ngga kalo aku ketemu kamu di taman?' },
-        { sender: 'peer', text: 'bukan apa apa ya, maksudnya tuh ya karna lagi deket aja sama lokasi aku' },
-        { sender: 'user', text: 'boleh boleh, nanti kamu call aku aja kalo kamu udah dateng' },
-        { sender: 'peer', text: '😳😳' },
-        { sender: 'peer', text: 'oke deh' },
-        { sender: 'peer', text: 'eh tapi grindr gabisa call' },
-        { sender: 'peer', text: 'mau move ke imess aja ga?' },
-        { sender: 'user', text: 'oh iya, oke okee boleh di imess aja 62869XXXXXXXX' },
-        { sender: 'user', text: 'klo chat di grindr juga kek selingkuh kesannya 😭' },
-        { sender: 'peer', text: 'hahaha, oke ttyl' }
-    ];
-
-    function renderGrindrChat() {
-        const body = document.getElementById('grindrChatBody');
-        let messages = chatsData.grindrJae;
-        if (messages.length === 0) {
-            messages.push({ sender: 'user', text: 'eh maaf aku kepencet like.....' });
-        }
-        renderMessages(body, messages);
-
-        if (messages.length < jaeGrindrScript.length + 1 && storyStage <= 3) {
-            runAutoScript(jaeGrindrScript, messages, body, 'grindrJae', () => {
-                setStorage('chats', chatsData);
-                storyStage = 4;
-                setStorage('storyStage', storyStage);
-                // Trigger Scene 5 iMessage Unknown
-                setTimeout(() => {
-                    showNotification("iMessage", "cantik", "💬", () => {
-                        openApp('imessage', 'jaehyun');
-                    });
-                }, 1500);
-            });
-        }
-    }
-
-    /* ================= SCENE 5 & 6: iMESSAGE JAEHYUN & MARK INTERRUPT ================= */
-    const jaehyunScript1 = [
-        { sender: 'peer', text: 'cantik' },
-        { sender: 'peer', text: 'aku jaehyun' },
-        { sender: 'user', text: 'jaee' },
-        { sender: 'peer', text: 'save my contact ya, ill call you when iam arrive' },
-        { sender: 'user', text: 'okee' }
-    ];
-
-    const jaehyunScript2 = [
-        { sender: 'peer', text: 'eh kamu ga nyaman ya aku gituin' },
-        { sender: 'peer', text: 'maaf ya' },
-        { sender: 'user', text: 'NO NEED TO SAY SORRY JAEEE' },
-        { sender: 'user', text: 'tadi aku lagi jalan ke depan, pacar aku udah jemput, aku otw dari fore jaksel yang tambun' },
-        { sender: 'peer', text: 'ah okey okey, bilang ke pacar kamu untuk hati hati ya' },
-        { sender: 'user', text: 'hahahhaa pastii' }
-    ];
-
-    const markScript2 = [
-        { sender: 'peer', text: 'aku udah di depan, mbul' },
-        { sender: 'user', text: 'bentar aku beresin meja' },
-        { sender: 'user', text: 'aku ke bawah' },
-        { sender: 'peer', text: 'oke mbul hati hati turun tangga nya' }
-    ];
-
-    function openImessageChatJaehyun() {
-        const body = document.getElementById('imessageChatBody');
-        body.innerHTML = '';
-        document.getElementById('chatHeaderName').innerText = chatsData.imessJaehyunRenamed ? "Jaehyun" : "Unknown";
-        document.getElementById('chatHeaderAvatar').style.backgroundImage = "url('https://i.ibb.co/JRGCGhRt/f518d7ef576cfaf3c7388ec76a3ec1f2.jpg')";
-
-        let messages = chatsData.imessJaehyun;
-        if (messages.length === 0) {
-            messages.push({ sender: 'peer', text: 'cantik' });
-        }
-        renderMessages(body, messages);
-
-        if (messages.length < jaehyunScript1.length + 1 && storyStage <= 4) {
-            runAutoScript(jaehyunScript1, messages, body, 'imessJaehyun', () => {
-                // Rename unknown to Jaehyun
-                chatsData.imessJaehyunRenamed = true;
-                document.getElementById('chatHeaderName').innerText = "Jaehyun";
-                setStorage('chats', chatsData);
+        } else if (activeChatRoom === 'jaehyun') {
+            const len = chatData.jaehyun.length;
+            if (len === 2) {
+                pushBotMessage('jaehyun', "oke oke\ntapi ini kita gamau ngobrol dikit kah hahaha\npfp kamu lucu");
+            } else if (len === 4) {
+                pushBotMessage('jaehyun', "orang lucu nan ntik kek kamu mau digimanain fotonya tetep aja");
+            } else if (len === 6) {
+                pushBotMessage('jaehyun', "tetep lucu cantik imut gemes sayangku");
+            } else if (len === 8) {
+                pushBotMessage('jaehyun', "hahahha maaf maaff\nanw kamu stay dimana yongie");
+            } else if (len === 10) {
+                pushBotMessage('jaehyun', "yg dkt jxpo?");
+            } else if (len === 12) {
+                pushBotMessage('jaehyun', "aku di menteng");
+            } else if (len === 14) {
+                pushBotMessage('jaehyun', "hahaha kenapa emang dengan menteng\niya cocok sama kamu yongie");
+            } else if (len === 16) {
+                pushBotMessage('jaehyun', "ngga lah ini aku juga masih tinggal sama\nlagian kamu ngomongnya cocok cocok gitu");
+            } else if (len === 18) {
+                pushBotMessage('jaehyun', "lah kok kamu tau?\nkamu udah ngestalk aku kah 😂");
+            } else if (len === 20) {
+                pushBotMessage('jaehyun', "tu taman deket banget sama rumah aku, cuma 10 menit pake mobil nyampe\nkamu mau ngapain disana? suropati cuma sampe jam 7 deh bukanya");
+            } else if (len === 22) {
+                pushBotMessage('jaehyun', "kamu taken?");
+            } else if (len === 24) {
+                pushBotMessage('jaehyun', "luas hati ya pacar kamu\nboleh ngga kalo aku ketemu kamu di taman?\nbukan apa apa ya, maksudnya tuh ya karna lagi deket aja sama lokasi aku");
+            } else if (len === 26) {
+                pushBotMessage('jaehyun', "😳😳\noke deh\neh tapi grindr gabisa call\nmau move ke imess aja ga?");
+            } else if (len === 28) {
+                // Last Jaehyun Grindr chat -> Trigger Unknown iMessage notification
                 storyStage = 5;
-                setStorage('storyStage', storyStage);
-
-                // Trigger Mark interrupt
+                saveState();
                 setTimeout(() => {
-                    showNotification("Mark 💌", "aku udah di depan, mbul", "💬", () => {
-                        openApp('imessage', 'mark2');
+                    showNotification("Messages", "Unknown", "cantik", "💬", "#30d158", "unknown_msg");
+                }, 2000);
+            }
+        } else if (activeChatRoom === 'unknown') {
+            const len = chatData.unknown.length;
+            if (len === 2) {
+                // Rename Unknown to Jaehyun and update profile
+                setTimeout(() => {
+                    chatData.jaehyun = chatData.unknown;
+                    chatData.unknown = [];
+                    activeChatRoom = 'jaehyun';
+                    document.getElementById('imess-header-title').innerText = 'Jaehyun';
+                    renderMessages();
+                    saveState();
+                    
+                    pushBotMessage('jaehyun', "save my contact ya, ill call you when iam arrive", () => {
+                        // After user replies okee, continue script
                     });
-                }, 1500);
-            });
-        } else if (storyStage === 6) {
-            // Jaehyun part 2 after mark
-            if (messages.length < jaehyunScript1.length + jaehyunScript2.length + 1) {
-                runAutoScript(jaehyunScript2, messages, body, 'imessJaehyun', () => {
-                    setStorage('chats', chatsData);
-                    storyStage = 7;
-                    setStorage('storyStage', storyStage);
-                    // Trigger Naration Notification
+                }, 1000);
+            } else if (len === 4) {
+                pushBotMessage('jaehyun', "kaku banget");
+            } else if (len === 6) {
+                pushBotMessage('jaehyun', "ya jangan jaemet juga dong\naku save kamu taeyongie cantik", () => {
+                    // Trigger Mark notification
+                    storyStage = 6;
+                    saveState();
                     setTimeout(() => {
-                        showNotification("Naration", "Baca Narasi 01 Disini\nHint : Jam ke taman", "📖", () => {
-                            openApp('naration');
-                        });
-                    }, 1500);
+                        showNotification("Messages", "Mark 💌", "aku udah di depan, mbul", "💬", "#30d158", "mark_front");
+                    }, 2000);
                 });
             }
-        }
-    }
-
-    function openImessageChatMark2() {
-        const body = document.getElementById('imessageChatBody');
-        body.innerHTML = '';
-        document.getElementById('chatHeaderName').innerText = "Mark 💌";
-        document.getElementById('chatHeaderAvatar').style.backgroundImage = "url('https://i.ibb.co/93pHXYwV/IMG-20261028-WA0027.jpg')";
-
-        let messages = chatsData.mark2 || [];
-        if (messages.length === 0) {
-            messages.push({ sender: 'peer', text: 'aku udah di depan, mbul' });
-        }
-        renderMessages(body, messages);
-
-        if (messages.length < markScript2.length + 1 && storyStage <= 5) {
-            runAutoScript(markScript2, messages, body, 'mark2', () => {
-                chatsData.mark2 = messages;
-                setStorage('chats', chatsData);
-                storyStage = 6;
-                setStorage('storyStage', storyStage);
-
-                // Trigger Jaehyun part 2 Notification
+        } else if (activeChatRoom === 'mark' && storyStage === 6) {
+            const len = chatData.mark.length;
+            if (len >= 13) {
+                // Trigger Jaehyun sorry notification
+                storyStage = 7;
+                saveState();
                 setTimeout(() => {
-                    showNotification("Jaehyun", "eh kamu ga nyaman ya aku gituin", "💬", () => {
-                        openApp('imessage', 'jaehyun');
-                    });
-                }, 1500);
-            });
-        }
-    }
-
-    // Override openImessageChat router
-    const originalOpenImessage = openImessageChat;
-    openImessageChat = function(target) {
-        if (target === 'mark') {
-            originalOpenImessage('mark');
-        } else if (target === 'mark2') {
-            openImessageChatMark2();
-        } else if (target === 'jaehyun') {
-            openImessageChatJaehyun();
-        }
-    };
-
-
-    /* ================= SCENE 7: NARATION APP ================= */
-    function openNarationNote() {
-        document.getElementById('notePassModal').classList.add('active');
-    }
-
-    function closeNarationPass() {
-        document.getElementById('notePassModal').classList.remove('active');
-        currentNarationPin = "";
-        updateNarationDots();
-    }
-
-    function pressNarationKey(num) {
-        if (currentNarationPin.length < 4) {
-            currentNarationPin += num;
-            updateNarationDots();
-            playSfx('typing');
-        }
-        if (currentNarationPin.length === 4) {
-            if (currentNarationPin === '0500') {
-                playSfx('unlock');
+                    showNotification("Messages", "Jaehyun", "eh kamu ga nyaman ya aku gituin", "💬", "#30d158", "jae_sorry");
+                }, 2000);
+            }
+        } else if (activeChatRoom === 'jaehyun' && storyStage === 7) {
+            const len = chatData.jaehyun.length;
+            if (len >= 10) {
+                // Trigger Naration notification
+                storyStage = 8;
+                saveState();
                 setTimeout(() => {
-                    document.getElementById('notePassModal').classList.remove('active');
-                    document.getElementById('narationContentModal').style.display = 'block';
-                    currentNarationPin = "";
-                    updateNarationDots();
-                }, 300);
-            } else {
-                document.getElementById('narationError').innerText = "Passcode salah (Hint: Jam ke taman -> 0500)";
-                setTimeout(() => {
-                    currentNarationPin = "";
-                    updateNarationDots();
-                    document.getElementById('narationError').innerText = "";
-                }, 1500);
+                    showNotification("Naration", "Baca Narasi 01 Disini", "Hint: Jam ke taman", "📖", "#ff3b30", "naration_notif");
+                }, 2000);
             }
         }
     }
 
-    function updateNarationDots() {
-        for (let i = 0; i < 4; i++) {
-            const dot = document.getElementById(`nDot${i}`);
-            if (i < currentNarationPin.length) dot.classList.add('filled');
-            else dot.classList.remove('filled');
+    /* ==========================================
+       GRINDR APP LOGIC
+       ========================================== */
+    function renderGrindrScreen() {
+        const body = document.getElementById('grindr-body-content');
+        if (activeChatRoom === 'jaehyun' && currentOpenApp === 'grindr') {
+            // Show Grindr room chat if matched
+            body.innerHTML = `
+                <div class="room-chat active" style="height:100%;">
+                    <div class="chat-messages" id="grindr-msg-container"></div>
+                    <div class="typing-indicator" id="grindr-typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>
+                    <div class="chat-input-bar">
+                        <input type="text" class="chat-input" id="grindr-input-box" placeholder="Chat with Jae..." oninput="playTypingSound()">
+                        <button class="chat-send-btn" onclick="sendGrindrMessage()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+                    </div>
+                </div>
+            `;
+            renderGrindrMessages();
+            return;
         }
+
+        if (currentGrindrIndex >= grindrProfiles.length) {
+            body.innerHTML = `<div style="color:#fff; text-align:center; padding:40px;">Tidak ada profil lain di sekitar.</div>`;
+            return;
+        }
+
+        const p = grindrProfiles[currentGrindrIndex];
+        body.innerHTML = `
+            <div class="grindr-container">
+                <div class="grindr-card" style="background-image: url('${p.photo}');">
+                    <div class="grindr-info">
+                        <div class="grindr-name">${p.name}, ${p.age}</div>
+                    </div>
+                </div>
+                <div class="grindr-actions">
+                    <button class="grindr-action-btn" onclick="swipeGrindrProfile('pass')">✕</button>
+                    <button class="grindr-action-btn like" onclick="swipeGrindrProfile('like')">♥</button>
+                </div>
+            </div>
+        `;
     }
 
-    function closeNarationContent() {
-        document.getElementById('narationContentModal').style.display = 'none';
+    function swipeGrindrProfile(action) {
+        playSound('click');
+        currentGrindrIndex++;
+        if (currentGrindrIndex === 8) {
+            // 8th profile (Jae) matched
+            storyStage = 4;
+            saveState();
+            showNotification("Grindr", "Jae 27", "kini dapat berbicara denganmu!", "🔥", "#ff9f0a", "jae_match");
+        }
+        renderGrindrScreen();
+    }
+
+    function openGrindrChat() {
+        activeChatRoom = 'jaehyun';
+        if (chatData.jaehyun.length === 0) {
+            chatData.jaehyun.push({ sender: 'a', text: "eh maaf aku kepencet like....." });
+        }
+        renderGrindrScreen();
+    }
+
+    function renderGrindrMessages() {
+        const container = document.getElementById('grindr-msg-container');
+        if (!container) return;
+        container.innerHTML = '';
+        chatData.jaehyun.forEach(m => {
+            const bubble = document.createElement('div');
+            bubble.className = `message-bubble ${m.sender === 'a' ? 'outgoing' : 'incoming'}`;
+            bubble.innerText = m.text;
+            container.appendChild(bubble);
+        });
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function sendGrindrMessage() {
+        const input = document.getElementById('grindr-input-box');
+        const text = input.value.trim();
+        if (!text) return;
+
+        playSound('send');
+        chatData.jaehyun.push({ sender: 'a', text: text });
+        input.value = '';
+        renderGrindrMessages();
+        saveState();
+        checkStoryTriggers(text);
+    }
+
+    /* ==========================================
+       NARATION NOTES APP LOGIC
+       ========================================== */
+    function promptNotePasscode() {
+        playSound('click');
+        const pass = prompt("Masukkan Passcode Catatan (0500):");
+        if (pass === "0500") {
+            playSound('unlock');
+            alert("NARASI 01:\n\nSore itu di Taman Suropati, langkah kaki mempertemukan takdir yang sempat terhenti. Di antara deru angin Menteng dan riuh tawa, ada hati yang akhirnya menemukan pulangnya—Until I Make U Mine, Adin.");
+        } else if (pass !== null) {
+            playSound('click');
+            alert("Passcode salah!");
+        }
     }
 </script>
 
