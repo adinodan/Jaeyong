@@ -1,0 +1,189 @@
+<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><title>MeetWithJaef-Adin</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="color-scheme" content="dark">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;min-height:100vh;background:#000}
+body{display:flex;justify-content:center;font:700 15px/1.3 "SF Pro Rounded",ui-rounded,"SF Pro Display",-apple-system,system-ui,"Segoe UI",sans-serif,"Apple Color Emoji"}
+.ph{position:relative;width:min(100vw,calc(100vh*9/19.5));height:100vh;overflow:hidden;background:#000;color:#fff;user-select:none}
+.sc{position:absolute;inset:0;display:none;flex-direction:column;background:#000}.sc.on{display:flex}
+.bg{background-size:cover;background-position:center}
+#isl{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:50;background:#000;height:34px;min-width:110px;border-radius:20px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;gap:12px;transition:.3s}
+#isl.pl{min-width:190px}#isl .eq,#isl button{display:none}#isl.pl .eq,#isl.pl button{display:flex}
+.eq{gap:2px;align-items:flex-end;height:14px}.eq i{width:3px;background:#1db954;animation:e .6s infinite alternate}.eq i:nth-child(2){animation-delay:.2s}.eq i:nth-child(3){animation-delay:.4s}
+@keyframes e{from{height:3px}to{height:14px}}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+svg{display:block}
+/* lock */
+#lock{align-items:center;text-align:center}
+#lock .top{padding-top:62px;text-shadow:0 1px 8px #0006}#lock .dt{font-size:17px;opacity:.9}#lock .tm{font-size:84px;line-height:1}
+#lock .hint{position:absolute;bottom:90px;width:100%;opacity:.85;font-size:14px}
+.qa{position:absolute;bottom:40px;width:50px;height:50px;border-radius:50%;background:#0006;backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;pointer-events:none}
+#pad{position:absolute;inset:0;background:#000b;backdrop-filter:blur(25px);display:none;flex-direction:column;align-items:center;padding-top:110px}
+#pad.on{display:flex}#dots{display:flex;gap:16px;margin:18px}#dots i{width:13px;height:13px;border:2px solid #fff;border-radius:50%}#dots i.f{background:#fff}
+#perr{height:34px;color:#ff6b6b;font-size:13px;text-align:center;padding:0 20px}
+.kp{display:grid;grid-template-columns:repeat(3,74px);gap:14px}.kp button{height:74px;border-radius:50%;background:#fff2;font-size:30px}
+/* home */
+#home{background-size:cover;background-position:center}
+#hs{flex:1;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-top:56px}#hs::-webkit-scrollbar{display:none}
+.pg{min-width:100%;scroll-snap-align:start;padding:10px 16px 0;overflow:hidden}
+.wd{background:#0008;backdrop-filter:blur(20px);border-radius:24px;padding:14px;margin-bottom:14px}
+.sp{display:flex;gap:12px;align-items:center}.sp .cv{width:70px;height:70px;border-radius:12px;background:#1db954;display:flex;align-items:center;justify-content:center}
+.sp b{display:block;font-size:16px}.sp small{opacity:.7}.pr{height:4px;background:#fff3;border-radius:2px;margin-top:10px;overflow:hidden}.pr i{display:block;height:100%;width:0;background:#1db954}
+.ph2{height:230px;position:relative;padding:0;overflow:hidden}.ph2 img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1s}.ph2 img.on{opacity:1}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px 8px;text-align:center;font-size:11px}
+.ic{width:58px;height:58px;border-radius:14px;margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 2px 6px #0005}
+#dock{margin:8px 12px 14px;padding:12px;border-radius:30px;background:#fff3;backdrop-filter:blur(25px);display:flex;justify-content:space-around}
+#dock .ic{margin:0}
+.dg{text-align:center;padding:6px}.dg i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#fff6;margin:0 3px}.dg i.on{background:#fff}
+/* apps */
+.hd{display:flex;align-items:center;gap:8px;padding:56px 12px 8px;background:#111;min-height:96px}
+.hd .bk{color:#0a84ff;font-size:16px;display:flex;align-items:center}.hd h2{margin:0;font-size:17px;flex:1;text-align:center}.hd .sp2{width:60px}
+.hb{height:22px;display:flex;justify-content:center;align-items:center;cursor:pointer;background:#000}.hb i{width:120px;height:5px;border-radius:3px;background:#fff9}
+.bd{flex:1;min-height:0;overflow:auto}
+.ct{display:flex;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid #222;cursor:pointer}.ct img,.av{width:46px;height:46px;border-radius:50%;object-fit:cover;background:#555;display:flex;align-items:center;justify-content:center}
+.tabs{display:flex;background:#111}.tabs button{flex:1;padding:12px;opacity:.5}.tabs button.on{opacity:1;color:#0a84ff}
+.emp{padding:60px 20px;text-align:center;opacity:.5}
+#room{position:absolute;inset:0;height:100%;z-index:5;display:none;flex-direction:column;background:#000}#room.on{display:flex}
+#ml{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;padding:8px 0 150px}
+.m{max-width:75%;padding:8px 12px;border-radius:18px;margin:3px 10px;word-wrap:break-word;white-space:pre-wrap}
+.m.a{align-self:flex-end;background:#0a84ff;border-bottom-right-radius:4px}.m.b{align-self:flex-start;background:#2c2c2e;border-bottom-left-radius:4px}.m img{max-width:100%;border-radius:12px;display:block}
+.ib{display:flex;gap:8px;padding:8px 10px;background:#111;align-items:center}.ib div{flex:1;min-height:34px;border:1px solid #444;border-radius:18px;padding:7px 12px;color:#fff;overflow:hidden;white-space:nowrap}
+#kb{display:none;background:#1c1c1e;padding:8px 4px;flex-direction:column;gap:7px}#kb.on{display:flex}
+#kb div{display:flex;justify-content:center;gap:5px}#kb i{font-style:normal;width:32px;height:40px;border-radius:6px;background:#4a4a4c;display:flex;align-items:center;justify-content:center}#kb i.p{background:#fff;color:#000}
+.gc{position:relative;margin:10px 16px;flex:1;min-height:0;border-radius:20px;overflow:hidden;touch-action:none}.gc img{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.gc .nm{position:absolute;bottom:0;left:0;right:0;padding:40px 16px 16px;font-size:22px;background:linear-gradient(transparent,#000c)}
+.ac{display:flex;justify-content:center;gap:40px;padding:10px}.ac button{width:62px;height:62px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center;font-size:28px}
+#nt{position:absolute;top:56px;left:10px;right:10px;z-index:60;background:#2c2c2eee;backdrop-filter:blur(20px);border-radius:22px;padding:12px;display:flex;gap:10px;align-items:center;transform:translateY(-200px);transition:.4s;cursor:pointer}#nt.on{transform:none}
+#nt .ic{width:38px;height:38px;font-size:20px;margin:0;border-radius:9px;flex:none;overflow:hidden}#nt .ic img{width:100%;height:100%;object-fit:cover}#nt small{display:block;font-weight:400;opacity:.85}
+#cn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:70;width:80%;background:#222d;backdrop-filter:blur(20px);border-radius:24px;padding:22px;text-align:center;display:none}
+#md{position:absolute;inset:0;z-index:20;background:#000c;display:none;align-items:center;justify-content:center}#md.on{display:flex}
+#md div{background:#222;border-radius:20px;padding:20px;width:80%;text-align:center}#md input{width:100%;margin:12px 0;padding:10px;border-radius:10px;border:0;background:#333;color:#fff;font:inherit;text-align:center}
+#md .e{color:#ff6b6b;font-size:13px;min-height:18px}.nbody{padding:16px;white-space:pre-wrap;font-weight:400;line-height:1.55}
+</style></head><body>
+<div class="ph" id="ph">
+<div id="isl"><div class="eq"><i></i><i></i><i></i></div><button id="ip" aria-label="Pause"></button></div>
+<div id="nt"></div><div id="cn"></div>
+
+<div class="sc on bg" id="lock" style="background-image:url(https://i.ibb.co/JwJnhcs5/45919dca2bed00e907f9f66000b4f964.jpg)">
+ <div class="top"><div class="dt" id="ld"></div><div class="tm" id="lt"></div></div>
+ <div class="hint">Ketuk dua kali untuk membuka</div>
+ <div class="qa" style="left:36px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6v5l2 3v12H7V10l2-3z"/><path d="M12 12v3"/></svg></div>
+ <div class="qa" style="right:36px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13" r="4"/></svg></div>
+ <div id="pad"><div>Masukkan Passcode</div><div id="dots"><i></i><i></i><i></i><i></i></div><div id="perr"></div><div class="kp" id="kp"></div></div>
+</div>
+
+<div class="sc" id="home" style="background-image:url(https://i.ibb.co/M5WzWbhk/040571acff86430653fb4256f45bd105.jpg)">
+ <div id="hs">
+  <div class="pg">
+   <div class="wd sp"><div class="cv"><svg width="40" height="40" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#000"/><path d="M6 9c4-1 8-.7 12 1.2M6.7 12.2c3.5-.8 6.5-.5 9.5 1.1M7.3 15c2.8-.6 5-.3 7.5.9" stroke="#1db954" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg></div>
+    <div style="flex:1"><b>Before Yosi's Sleeping</b><small>Spotify · Playlist</small><div class="pr"><i id="pb"></i></div></div><button id="wp" aria-label="Play/Pause"></button></div>
+   <div class="wd ph2" id="pw"><img class="on" src="https://i.ibb.co/93pHXYwV/IMG-20261028-WA0027.jpg"><img src="https://i.ibb.co/fYPWGhjN/9dc45025288f962c80d02b7d1f4a347a-1.jpg"><img src="https://i.ibb.co/b50b3dNC/4819fac8f9426a72ad1fe7aeaa302c8b.jpg"></div>
+  </div>
+  <div class="pg"><div class="grid" id="ag"></div></div>
+ </div>
+ <div class="dg"><i class="on"></i><i></i></div>
+ <div id="dock"></div>
+</div>
+
+<div class="sc" id="im"><div class="hd"><button class="bk" data-go="home">‹ Kembali</button><h2>iMessage</h2><span class="sp2"></span></div>
+ <div class="bd" id="imb"></div><div class="tabs"><button class="on" data-t="c">Chat</button><button data-t="k">Call</button><button data-t="s">Story</button></div><div class="hb" data-go="home"><i></i></div></div>
+
+<div class="sc" id="gr"><div class="hd"><button class="bk" data-go="home">‹ Kembali</button><h2>Grindr</h2><span class="sp2"></span></div>
+ <div class="gc" id="gc"></div><div class="ac"><button id="gx">✕</button><button id="gl">❤️</button></div><div class="hb" data-go="home"><i></i></div></div>
+
+<div class="sc" id="nar"><div class="hd"><button class="bk" data-go="home">‹ Kembali</button><h2>Naration</h2><span class="sp2"></span></div>
+ <div class="bd" id="nb"></div><div class="hb" data-go="home"><i></i></div></div>
+<div class="sc" id="note"><div class="hd"><button class="bk" data-go="nar">‹ Naration</button><h2 id="nth"></h2><span class="sp2"></span></div><div class="bd nbody" id="ntx"></div><div class="hb" data-go="home"><i></i></div></div>
+<div class="sc" id="nts"><div class="hd"><button class="bk" data-go="home">‹ Kembali</button><h2>Notes</h2><span class="sp2"></span></div><div class="emp">Belum ada catatan</div><div class="hb" data-go="home"><i></i></div></div>
+
+<div id="md"><div><b id="mt"></b><small id="mh" style="display:block;opacity:.7;font-weight:400"></small><input id="mi" autocomplete="off" placeholder="Passcode"><div class="e" id="me"></div><button id="mo" style="color:#0a84ff;margin-right:20px">OK</button><button id="mc">Batal</button></div></div>
+
+<div id="room"><div class="hd"><button class="bk" id="rb">‹ Kembali</button><div style="flex:1;display:flex;align-items:center;gap:8px;justify-content:center"><span class="av" id="ra" style="width:30px;height:30px"></span><b id="rn"></b></div><span class="sp2" style="width:50px"></span></div>
+ <div id="ml"></div><div class="ib"><div id="ti"></div></div><div id="kb"></div></div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],sl=ms=>new Promise(r=>setTimeout(r,ms));
+let ac,cur='lock',playing=false,cr=null,from='im';
+function tone(f,d,t='sine',v=.07,at=0){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain(),s=ac.currentTime+at;o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(g);g.connect(ac.destination);o.start(s);o.stop(s+d)}catch(e){}}
+const snd={unlock(){tone(880,.15);tone(1320,.3,'sine',.07,.12)},type(){tone(1700+Math.random()*300,.03,'square',.025)},sent(){tone(1200,.08);tone(1700,.14,'sine',.07,.07)},notif(){tone(1568,.14,'triangle',.1);tone(1175,.35,'triangle',.1,.15)}};
+const AV={maes:'https://i.ibb.co/tMGPpkbJ/81f61598c78ed4b77932596eb0d07944.jpg',jaef:'https://i.ibb.co/wF9Dp2pW/HVw-F5c-Eag-AAS9d-P.jpg',gj:'https://i.ibb.co/JRGCGhRt/f518d7ef576cfaf3c7388ec76a3ec1f2.jpg'};
+const R={maes:{n:'Maes',av:AV.maes,m:[]},unk:{n:'Unknown',av:'',m:[],on:0},gj:{n:'Jaef, 27',av:AV.gj,m:[]}};
+function go(id){$$('.sc').forEach(e=>e.classList.toggle('on',e.id==id));$('#room').classList.remove('on');cur=id;if(id=='im')lst()}
+$$('[data-go]').forEach(e=>e.onclick=()=>go(e.dataset.go));
+const PI='<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>',PA='<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+function setP(v){playing=v;$('#wp').innerHTML=v?PA:PI;$('#ip').innerHTML=PA;$('#isl').classList.toggle('pl',v)}
+$('#wp').onclick=$('#ip').onclick=()=>setP(!playing);
+let pg=0;setInterval(()=>{if(playing){pg=(pg+.4)%100;$('#pb').style.width=pg+'%'}},400);
+let pi=0;setInterval(()=>{const im=$$('#pw img');im[pi].classList.remove('on');pi=(pi+1)%3;im[pi].classList.add('on')},3000);
+// clock
+function clk(){const d=new Date();$('#lt').textContent=d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}).replace('.',':');$('#ld').textContent=d.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long'})}clk();setInterval(clk,10000);
+// lock
+let lt=0,code='';
+$('#lock').addEventListener('click',e=>{if(e.target.closest('#pad'))return;const n=Date.now();if(n-lt<350)$('#pad').classList.add('on');lt=n});
+$('#kp').innerHTML=[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>`<button ${k===''?'style="visibility:hidden"':''}>${k}</button>`).join('');
+$$('#kp button').forEach(b=>b.onclick=()=>{const k=b.textContent;$('#perr').textContent='';if(k=='⌫')code=code.slice(0,-1);else if(code.length<4)code+=k;$$('#dots i').forEach((d,i)=>d.classList.toggle('f',i<code.length));
+ if(code.length==4){if(code=='1007'){snd.unlock();setTimeout(()=>{go('home');setP(true);start()},200)}else{$('#perr').textContent='Passcode salah, cek akun author';code='';setTimeout(()=>$$('#dots i').forEach(d=>d.classList.remove('f')),250)}}});
+$('#pad').onclick=e=>{if(e.target.id=='pad')e.target.classList.remove('on')};
+// home
+const APPS=[['Kamera','#555','📷'],['Foto','#fff','🌸'],['Jam','#111','🕐'],['Cuaca','#3a7bd5','⛅'],['Kalender','#fff','📅'],['Pengaturan','#8e8e93','⚙️'],['Grindr','#ffc800','😈','gr'],['iMessage','#34c759','💬','im'],['Maps','#4cd964','🗺️'],['Find My','#34c759','📍'],['X','#000','𝕏'],['Instagram','linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7)','📸'],['Notes','#ffd60a','📝','nts'],['Sampah','#8e8e93','🗑️'],['Naration','#5e5ce6','📖','nar'],['Safari','#0a84ff','🧭'],['Wallet','#111','💳'],['Musik','#fc3c44','🎵'],['Kalkulator','#ff9f0a','🧮'],['Kesehatan','#fff','❤️']];
+const ic=a=>`<div data-a="${a[3]||''}"><div class="ic" style="background:${a[1]}">${a[2]}</div>${a[0]}</div>`;
+$('#ag').innerHTML=APPS.map(ic).join('');$('#dock').innerHTML=[APPS[15],APPS[7],APPS[17],APPS[0]].map(a=>ic(a).replace(a[0],'')).join('');
+$$('[data-a]').forEach(e=>e.onclick=()=>e.dataset.a?go(e.dataset.a):toast('Aplikasi ini tidak tersedia'));
+$('#hs').onscroll=e=>{const p=e.target.scrollLeft>150?1:0;$$('.dg i').forEach((d,i)=>d.classList.toggle('on',i==p))};
+function toast(t){const c=$('#cn');c.textContent=t;c.style.display='block';setTimeout(()=>c.style.display='none',1200)}
+// notif
+function notify(icon,title,body){return new Promise(res=>{const n=$('#nt');n.innerHTML=`<div class="ic" style="background:#333">${icon.startsWith('http')?`<img src="${icon}">`:icon}</div><div><b>${title}</b><small>${body}</small></div>`;snd.notif();setTimeout(()=>n.classList.add('on'),30);n.onclick=()=>{n.classList.remove('on');res()}})}
+// chat
+const KR=['qwertyuiop','asdfghjkl','zxcvbnm'];$('#kb').innerHTML=KR.map(r=>`<div>${[...r].map(c=>`<i>${c}</i>`).join('')}</div>`).join('')+'<div><i style="width:200px">space</i></div>';
+function bub(m){const d=document.createElement('div');d.className='m '+m.w;if(m.t.startsWith('http'))d.innerHTML=`<img src="${m.t}">`;else d.textContent=m.t;$('#ml').appendChild(d);return d}
+function scr(){const l=$('#ml'),last=l.lastElementChild;if(last)l.scrollTo({top:last.offsetTop-l.clientHeight*.55,behavior:'smooth'})}
+function avh(r){return r.av?`<img src="${r.av}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`:'👤'}
+function open(k,f){cr=k;from=f;const r=R[k];$('#rn').textContent=r.n;$('#ra').innerHTML=avh(r);$('#ml').innerHTML='';r.m.forEach(bub);$('#kb').classList.remove('on');$('#ti').textContent='';$$('.sc').forEach(e=>e.classList.remove('on'));$('#room').classList.add('on');cur='room';const l=$('#ml');setTimeout(()=>l.scrollTop=l.scrollHeight,0)}
+$('#rb').onclick=()=>{$('#room').classList.remove('on');go(from)};
+const view=k=>cur=='room'&&cr==k;
+async function play(k,arr){for(const s of arr){const w=s[0],t=s.slice(2),d=t.length>60?2000:1750;
+ if(w=='a'&&view(k)&&!t.startsWith('http')){$('#kb').classList.add('on');const st=(d-500)/Math.max(t.length,1);let x='';for(const c of t){if(!view(k))break;x+=c;$('#ti').textContent=x;snd.type();const kk=$$('#kb i').find(i=>i.textContent==c.toLowerCase());if(kk){kk.classList.add('p');setTimeout(()=>kk.classList.remove('p'),80)}await sl(st)}await sl(300)}else await sl(d);
+ R[k].m.push({w,t});if(view(k)){$('#ti').textContent='';$('#kb').classList.remove('on');bub({w,t});scr()}if(w=='a')snd.sent();else if(view(k))tone(900,.1)}
+ if(view(k))$('#kb').classList.remove('on')}
+function lst(){const b=$('#imb');b.innerHTML=Object.keys(R).filter(k=>k!='gj'&&(k!='unk'||R.unk.on)).map(k=>{const r=R[k],l=r.m[r.m.length-1];return `<div class="ct" data-k="${k}"><span class="av">${avh(r)}</span><div><b>${r.n}</b><div style="font-weight:400;opacity:.6;font-size:13px">${l?(l.t.startsWith('http')?'📷 Foto':l.t):''}</div></div></div>`}).join('');$$('.ct').forEach(e=>e.onclick=()=>open(e.dataset.k,'im'))}
+$$('.tabs button').forEach(b=>b.onclick=()=>{$$('.tabs button').forEach(x=>x.classList.toggle('on',x==b));if(b.dataset.t=='c')lst();else $('#imb').innerHTML=`<div class="emp">${b.dataset.t=='k'?'Belum ada panggilan':'Belum ada story'}</div>`});
+// grindr
+const GP=[['6b3927a9d482dcd69490a6567b08fc2d','Hamka, 24'],['133a2794115ec21f7a2604fb719d49b8','Suney, 20'],['3b5f54bc59c53f26d4d19c049905720b','jibar, 20'],['4c6266aca9b64c462e7ef2b89c43d623','david, 19'],['79f39f9df6cfd66e7661ee52e39f6588','kennan, 18'],['aa99140e8bc344670fc66d0f43f878d4','bagus, 18'],['f210aa0e31defc607338ad6c8f23afdf','jonan, 25'],['f518d7ef576cfaf3c7388ec76a3ec1f2','jaef, 27']],GU=['qLfzZS14/','C5jv058y/','Xrs1shH5/','bjM83R8Z/','Rp0zFnK7/','W4W250JK/','S73TrvwR/','JRGCGhRt/'];
+let gi=0,gdone;const gp=new Promise(r=>gdone=r);
+function gcard(){const c=$('#gc');if(gi>=8){c.innerHTML='<div class="emp">Tidak ada lagi di sekitarmu</div>';return}c.style.transform='';c.innerHTML=`<img src="https://i.ibb.co/${GU[gi]}${GP[gi][0]}.jpg"><div class="nm">${GP[gi][1]}</div>`}
+function gadv(){gi++;if(gi==8)gdone();gcard()}
+$('#gx').onclick=$('#gl').onclick=gadv;
+let sx=null;const gc=$('#gc');gc.onpointerdown=e=>{sx=e.clientX;gc.setPointerCapture(e.pointerId)};gc.onpointermove=e=>{if(sx!=null)gc.style.transform=`translateX(${e.clientX-sx}px) rotate(${(e.clientX-sx)/20}deg)`};gc.onpointerup=e=>{if(sx==null)return;const d=Math.abs(e.clientX-sx);sx=null;d>80?gadv():gc.style.transform=''};
+gcard();
+// naration
+const NOTES=[{t:'Di Taman; Maes',h:'Jam ke taman',p:'0500',x:`Untungnya sore hari itu ga macet, mungkin karena tadi Maes pake jalan yang biasanya ga dilewatin orang kalo ke taman Suropati. Selama perjalanan Maes banyak banget ceritanya, si Yosi juga nanggepin excited gitu, ga ada yang excited sendirian disitu karena dua duanya saling bertukar cerita.\n\nTapi ada satu cerita yang kelewat, Yosi lupa bilang ke Maes kalau ada cowo Grindr yang bakal ketemu sama mereka. Dia bener bener lupa sama Jaef padahal dalang yang bikin nyembur tadi aja si Jaef. Tapi serius deh, Yosi beneran lupa banget bilang ke Maes. Mungkin karena hp nya udah di taro ke tas juga jadi ga kepikiran Jaef yang dia kenal baru beberapa jam lalu.\n\nKebanyakan cerita dan ngobrol lucu, ternyata udah mau sampai aja.\n\n"Ini bentar lagi di depan sampai ka"\n"Eh iya? Cepet banget ya ga kerasa lho dari thamrin ke sini"\n"Ya kan kita ga diem dieman kayak kamu awal masuk mobil ka hahaha"\n"Yah di ungkit dehhh, tapi kan abis itu aku fokus nya ke kamu"\n"Kamu mau main basket sama siapa deh"\n"Sama temen temen lama aku"\n"Wih temen lama, dari sma atau kuliah"\n"Dari sma"\n"Aku kenal dong?"\n"Iya kalo se tim nya bareng si Lutfhi, Keenan, Tera, sama satu temen lagi"\n"Siapa yang terakhir?"\n"Sama Haska"\n\nDenger nama Haska yang ga mungkin Yosi gatau, dia jadi diem seperkian detik. Sampai sampai harus di panggil lagi sama Maes\n\n"Ka?"\n"Ka kamu oke"\n"Eh iya iya kenapa Maes?"\n"Ngga, tiba tiba kamu diem gitu. Udah nyampe ini"\n"Ohh udah nyampe ya"\n"Sini aku lepasin seat belt nya ka"\n\nYang biasanya apa apa dibenerin sama Maes, Yosi kali ini nolak bantuan dari Maes entah ada apa dengan Yosi ((bukan judul film)).\n\n"Gaperlu kok, aku bisa sendiri"\n"Hmm oke oke"\n"Yuk keluar, aku udah ga sabar liat tamannya"\n\nSuara terakhir keluar dari Yosi, kedengeran excited tapi kayak ada suara yang retak cuma bukan piring, hati Yosi keknya\n\n"Tungguin aku ka, aku ambil bola di belakang"`},
+{t:'Di Taman; Jaef',h:'tulisan pantai di postingan baru taeyong 4 huruf uppercase',p:'JHTY',x:`Selepas Maes udah pergi, dia langsung lari buat nyamperin Jaef. Sebenernya ga jauh, cuma sebrangan sama pepohonan, mungkin 10-15 meter aja\n\n"JAEEFF!"\nTeriakan disertai lambaian tangan Yosi ikut menyertai, sembari ia makin mendekat ke Jaef\n\n"Jaef aku minta maaf banget aku tadi ga buka hp aku"\n"Aku lupa tadi ga nyalain notif jadi gatau kamu call aku"\n"Maaf banget ya kamu jadi nunggu lama"`}];
+let nopen=null;
+function nl(){$('#nb').innerHTML=NOTES.map((n,i)=>`<div class="ct" data-i="${i}"><span class="av">🔒</span><b>${n.t}</b></div>`).join('')+(NOTES.some(n=>n.on)?'':'');$$('#nb .ct').forEach(e=>e.onclick=()=>{const n=NOTES[e.dataset.i];if(n.ok)shn(n);else{nopen=n;$('#mt').textContent=n.t;$('#mh').textContent='Hint : '+n.h;$('#mi').value='';$('#me').textContent='';$('#md').classList.add('on')}})}
+function shn(n){$('#nth').textContent=n.t;$('#ntx').textContent=n.x;go('note')}
+$('#mo').onclick=()=>{if($('#mi').value==nopen.p){nopen.ok=1;$('#md').classList.remove('on');shn(nopen)}else $('#me').textContent='Passcode salah, cek akun author'};$('#mc').onclick=()=>$('#md').classList.remove('on');
+const _go=go;go=function(id){_go(id);if(id=='nar')nl()};
+$$('[data-go]').forEach(e=>e.onclick=()=>go(e.dataset.go));$$('[data-a]').forEach(e=>e.onclick=()=>e.dataset.a?go(e.dataset.a):toast('Aplikasi ini tidak tersedia'));
+// script
+const M1=['b|kamu jadi ke taman ga ka','a|jadii kok','a|cuma ini lagi di fore','a|kamu mau nitip fore?','b|gausah tadi aku udah ngopi sama Luthfi','b|kamu dari fore langsung jalan ke taman atau pulang kerumah dulu','a|kayaknya aku mau langsung aja deh','b|naik apa?','a|nanti aku naik gojek aja terus lanjut busway','b|kelamaan gasi ka?','b|aku jemput aja, kan kita bareng ke tamannya','a|ya justru karna aku tau bsd ke jaksel tuh jauh, makannya aku ga mau kamu jemput','b|gapapa ka, kamu nanti di busway ga dapet tempat duduk, rush hour lho ini','b|kamu tunggu di fore ya, aku on the way sekarang','a|😔😔😔','a|emang gapernah dengerin','a|hati hatii ya maes, makasii udah mau jemput aku 🥺'];
+const G=['a|eh maaf aku kepencet like.....','b|hi','b|yah kirain beneran di like','a|waduh, maaf ya','b|oke oke','b|tapi ini kita gamau ngobrol dikit kah hahaha','b|pfp kamu lucu','a|aman amann','a|pfp aku se ngezoom itu... kok bisa bilang lucu, keliatan aja ngga','b|orang lucu nan ntik kek kamu mah mau digimanain fotonya tetep aja','a|tetep apa?','b|tetep lucu cantik imut gemes','a|bisa ae lu masker mugwort','b|UNIK TUH BEGITU','b|anw kamu stay dimana yongie','a|aku di kemayoran','b|yg dkt jixpo?','a|bukan tapi masih se daerah lah','a|kamu sendiri stay dimana?','b|aku di menteng','a|ganteng, mateng, menteng','a|gokil dah','b|hahaha kenapa emang dengan menteng','a|ya secara menteng kan mahal mampus rumahnya 😭 aku aja di kemayoran kost nya 2jt doang udh gakuat rasanya','b|ngga lah ini aku juga masih tinggal sama ortu','a|ya tetep aja mantep','a|eh iya aku baru inget, menteng yg deket taman suropati bukan?','b|lah kok kamu tau?','b|kamu udah ngestalk aku kah 😂','a|EH NGGAAA','a|kebetulan jam 5 ini aku mau kesana emanggg','b|tu taman deket banget sama rumah aku, cuma 10 menit pake mobil nyampe','b|kamu mau ngapain disana? suropati cuma sampe jam 7 deh bukanya','a|mau main aja, sama nemenin pacar aku main basket di taman yang seberang nya suropati','b|kamu taken?','a|haha','a|belum sih, mungkin soon 😂','b|waduh, kaget aku manggil pacar','b|boleh ngga kalo aku ketemu kamu di taman?','b|bukan apa apa ya, maksudnya tuh ya karna lagi deket aja sama lokasi aku','a|boleh boleh, nanti kamu call aku aja kalo kamu udah dateng','b|😳😳','b|oke deh','b|eh tapi grindr gabisa call','b|mau move ke imess aja ga?','a|oh iya di imess aja deh 62869XXXXXXXX','b|oke makasih cantik, ttyl'];
+const U1=['b|cantik','b|aku jaef','a|jaee','b|save my contact ya, ill call you when iam arrive','a|okee'];
+const U2=['b|kamu udah mau otw?','a|belumm, belum nyampe jemputannya','b|naik grab atau apa emangnya','a|dijemput sama cowo aku yang tadi aku bilang hahaha','b|ohh','b|sering ya kalian ngedate berdua gini','a|ngga juga sih dia sibuk sama kerja','a|bentar kayaknya di bawah ada suara mobil, kayaknya dia udah dateng','a|nanti aku chat lagi ya jaef','b|oke hati hati di jalan ya, yosi'];
+const M2=['b|aku udah di depan, ka','a|okeeeyy aku udah denger mobil kamu tadi','a|bentar aku beresin meja','a|aku ke bawah','b|hati hati turun tangga nya'];
+const J=['b|kamu mau aku bawain sesuatu ga?','b|eh maaf kamu masih dijalan ya?','a|iya aku masih dijalan','a|gaperlu bawain apa apa kok','b|kamu emang udah makan?','a|belum sih','b|yaudah aku masak dulu ya buat bawain kamu makan','a|HAH','a|GAUSAHH IH, kenapa kamu sampe masak.... aku bisa beli nanti di taman 😭😭','b|belum tentu sehat','b|lagian masakan aku enak kok, dulu pas kecil aku pernah ikut masterchef kids','a|ngga gitu aku gaenak sama kamu','a|beneran deh aku beli diluar bisa kok jaef, gausah cape cape','b|aku ga capek kalo untuk kamu','a|kita baru kenal beberapa jam lalu ya, jaef','b|aku serius','b|kamu suka pedes yang level berapa?','b|ga pedes, pedes dikit, pedes, pedes nampol, pedes noyor, pedes tetangga, atau pedes se aku','a|APASIH KOCAG AMAT AHAHAHAHHA','a|pedes dikit aja, soalnya aku gatau "pedes se aku" itu apa','b|oh, pedes se aku tuh ini','b|https://i.ibb.co/LdZGxDPf/HV8x9-4ao-AAa-A1q.jpg','b|https://i.ibb.co/YBsGsZHn/HV8x9-4a-UAAt-It-Z.jpg','a|ANJINGGGVNYEMBURENAK'];
+const M3=['b|eh eh ka kenapa nyembur kopinya, hati hati','a|eh iya gapapa maes, tadi batuk jadi nyembur','b|perasaan aku ga denger kaka batuk deh','b|bentar aku tepiin mobilnya dulu','b|aku lap dulu sini ka bibir kamu sama leher kamu jadi basah itu sampe ke baju','a|gausah maes biar aku aja sini','b|hmm oke oke','b|kamu tadi aku liatin dari awal masuk mobil ka senyam senyum mulu ka','b|ampe nyembur','b|lagi liatin apasih','a|oh hahahha, ngga ada kokk ini emang tadi batuk ajaa','a|aku udah bersih ini','a|lanjut jalan lagi aja yuk','b|tapi simpen dulu hp nya, fokus kamu daritadi ke hp terus ka','b|bahkan aku ga kamu ajak ngobrol','a|iyaa dehh ini aku taro hp nya di tas, lanjut jalan lagi yuk keburu kesorean','b|nahh, keyyy meluncur'];
+let started=0;
+async function start(){if(started)return;started=1;await sl(1200);
+ await notify(AV.maes,'Maes','kamu jadi ke taman ga ka');open('maes','im');await play('maes',M1);
+ await notify('😈','<b>Ayo Cari Pasanganmu</b>','8 orang kini menantimu');go('gr');await gp;
+ await notify('😈','Grindr','Jaef 27 kini dapat berbicara denganmu!');open('gj','gr');await play('gj',G);
+ R.unk.on=1;await notify('💬','Unknown','cantik');open('unk','im');await play('unk',U1);
+ R.unk.n='Jaef';R.unk.av=AV.jaef;if(view('unk')){$('#rn').textContent='Jaef';$('#ra').innerHTML=avh(R.unk)}await sl(800);await play('unk',U2);
+ await notify(AV.maes,'mark 💌','aku udah di depan, mbul');open('maes','im');await play('maes',M2);
+ const c=$('#cn');c.textContent='Maes dan Yosi kini on the way ke suropati, sekarang mereka sudah menempuh 15 menit perjalanan.';c.style.display='block';snd.notif();await sl(10000);c.style.display='none';
+ await notify(AV.jaef,'Jaef','kamu mau aku bawain sesuatu ga?');open('unk','im');await play('unk',J);
+ await notify(AV.maes,'Maes','eh eh ka kenapa nyembur kopinya, hati hati');open('maes','im');await play('maes',M3);
+ await notify('📖','Di Taman; Maes','Hint : Jam ke taman');go('nar')}
+setP(false);
+</script></body></html>
